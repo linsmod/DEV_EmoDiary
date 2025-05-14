@@ -24,7 +24,7 @@
 
   <!-- 空状态 -->
   <view class="empty-state" wx:if="{{!loading && notes.length === 0}}">
-    <image class="empty-image" src="/images/empty.png" mode="aspectFit"></image>
+    <image class="empty-image" src="/images/empty.svg" mode="aspectFit"></image>
     <text class="empty-text">还没有笔记，点击上方按钮创建吧！</text>
   </view>
 

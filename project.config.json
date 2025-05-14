@@ -47,8 +47,8 @@
     }
   },
   "compileType": "miniprogram",
-  "libVersion": "2.19.4",
-  "appid": "touristappid",
+  "libVersion": "3.8.3",
+  "appid": "wxe5e0577559425762",
   "projectname": "记事本",
   "isGameTourist": false,
   "condition": {
