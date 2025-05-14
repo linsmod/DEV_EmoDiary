@@ -1,0 +1,42 @@
+<!--pages/detail/detail.wxml-->
+<view class="container">
+  <!-- 笔记详情 -->
+  <view class="note-detail" wx:if="{{!loading && note}}">
+    <!-- 标题 -->
+    <view class="note-title">
+      {{note.title || '无标题笔记'}}
+    </view>
+    
+    <!-- 更新时间 -->
+    <view class="note-time">
+      更新于 {{note.updateTimeStr}}
+    </view>
+    
+    <!-- 内容 -->
+    <view class="note-content">
+      <text>{{note.content || '暂无内容'}}</text>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <view class="action-btn edit-btn" bindtap="onEdit">
+        <text class="btn-icon">✎</text>
+        <text>编辑</text>
+      </view>
+      <view class="action-btn delete-btn" bindtap="onDelete">
+        <text class="btn-icon">🗑</text>
+        <text>删除</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 加载状态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+  
+  <!-- 笔记不存在 -->
+  <view class="not-found" wx:if="{{!loading && !note}}">
+    <text>笔记不存在或已被删除</text>
+  </view>
+</view>

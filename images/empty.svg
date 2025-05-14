@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <style>
+    .st0{fill:#F2F2F2;}
+    .st1{fill:#E0E0E0;}
+    .st2{fill:#3498DB;}
+    .st3{fill:#CCCCCC;}
+  </style>
+  <rect class="st0" x="40" y="40" width="120" height="150" rx="10" ry="10"/>
+  <rect class="st1" x="60" y="70" width="80" height="10" rx="2" ry="2"/>
+  <rect class="st1" x="60" y="90" width="80" height="10" rx="2" ry="2"/>
+  <rect class="st1" x="60" y="110" width="40" height="10" rx="2" ry="2"/>
+  <circle class="st2" cx="140" cy="60" r="20"/>
+  <path class="st3" d="M140,45v30 M125,60h30" stroke-width="4" stroke="#FFFFFF"/>
+</svg>

@@ -1,0 +1,35 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 新建笔记按钮 -->
+  <view class="add-button" bindtap="onNewNote">
+    <text class="add-icon">+</text>
+    <text>新建笔记</text>
+  </view>
+
+  <!-- 笔记列表 -->
+  <view class="notes-list" wx:if="{{!loading && notes.length > 0}}">
+    <view class="note-item" wx:for="{{notes}}" wx:key="id">
+      <view class="note-content" bindtap="onViewNote" data-id="{{item.id}}">
+        <view class="note-title">{{item.title || '无标题笔记'}}</view>
+        <view class="note-preview">{{item.content || '暂无内容'}}</view>
+        <view class="note-time">{{item.updateTimeStr}}</view>
+      </view>
+      <view class="note-actions">
+        <view class="delete-btn" catchtap="onDeleteNote" data-id="{{item.id}}">
+          删除
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && notes.length === 0}}">
+    <image class="empty-image" src="/images/empty.png" mode="aspectFit"></image>
+    <text class="empty-text">还没有笔记，点击上方按钮创建吧！</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>
