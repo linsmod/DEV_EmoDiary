@@ -11,7 +11,7 @@
     <view class="note-item" wx:for="{{notes}}" wx:key="id">
       <view class="note-content" bindtap="onViewNote" data-id="{{item.id}}">
         <view class="note-title">{{item.title || '无标题笔记'}}</view>
-        <view class="note-preview">{{item.content || '暂无内容'}}</view>
+        <view class="note-preview">{{item.contentText || '暂无内容'}}</view>
         <view class="note-time">{{item.updateTimeStr}}</view>
       </view>
       <view class="note-actions">

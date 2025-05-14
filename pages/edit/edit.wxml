@@ -7,7 +7,77 @@
   
   <!-- 内容输入 -->
   <view class="input-group content-group">
-    <textarea class="content-input" placeholder="请输入内容" value="{{content}}" bindinput="onContentInput" maxlength="5000" auto-height />
+    <editor id="editor" 
+            class="content-editor" 
+            placeholder="请输入内容" 
+            show-img-size 
+            show-img-toolbar 
+            show-img-resize
+            bindready="onEditorReady"
+            bindinput="onContentInput">
+    </editor>
+  </view>
+
+  <!-- 颜色选择器 -->
+  <view class="color-picker-panel" wx:if="{{showColorPicker}}">
+    <view class="color-item" 
+          wx:for="{{colors}}" 
+          wx:key="*this" 
+          style="background-color: {{item}}"
+          bindtap="setBackgroundColor"
+          data-color="{{item}}">
+    </view>
+  </view>
+  
+  <!-- 富文本工具栏 -->
+  <view class="toolbar">
+    <view class="toolbar-group">
+      <!-- 字体大小 -->
+      <view class="toolbar-item {{fontSize === 'small' ? 'active' : ''}}" bindtap="setFontSize" data-size="small">小</view>
+      <view class="toolbar-item {{fontSize === 'normal' ? 'active' : ''}}" bindtap="setFontSize" data-size="normal">中</view>
+      <view class="toolbar-item {{fontSize === 'large' ? 'active' : ''}}" bindtap="setFontSize" data-size="large">大</view>
+    </view>
+    
+    <view class="toolbar-group">
+      <!-- 加粗 -->
+      <view class="toolbar-item {{formats.bold ? 'active' : ''}}" bindtap="format" data-name="bold">
+        B
+      </view>
+      <!-- 斜体 -->
+      <view class="toolbar-item {{formats.italic ? 'active' : ''}}" bindtap="format" data-name="italic">
+        I
+      </view>
+    </view>
+    
+    <view class="toolbar-group">
+      <!-- 对齐方式 -->
+      <view class="toolbar-item {{formats.align === 'left' ? 'active' : ''}}" bindtap="format" data-name="align" data-value="left">
+        ←
+      </view>
+      <view class="toolbar-item {{formats.align === 'center' ? 'active' : ''}}" bindtap="format" data-name="align" data-value="center">
+        ⟷
+      </view>
+      <view class="toolbar-item {{formats.align === 'right' ? 'active' : ''}}" bindtap="format" data-name="align" data-value="right">
+        →
+      </view>
+    </view>
+    
+    <view class="toolbar-group">
+      <!-- 列表 -->
+      <view class="toolbar-item {{formats.list === 'ordered' ? 'active' : ''}}" bindtap="format" data-name="list" data-value="ordered">
+        1.
+      </view>
+      <view class="toolbar-item {{formats.list === 'bullet' ? 'active' : ''}}" bindtap="format" data-name="list" data-value="bullet">
+        •
+      </view>
+    </view>
+    
+    <view class="toolbar-group">
+      <!-- 背景色 -->
+      <view class="toolbar-item color-picker" bindtap="showColorPicker">
+        背景
+      </view>
+    </view>
   </view>
   
   <!-- 保存按钮 -->

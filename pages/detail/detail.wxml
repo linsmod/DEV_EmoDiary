@@ -14,7 +14,7 @@
     
     <!-- 内容 -->
     <view class="note-content">
-      <text>{{note.content || '暂无内容'}}</text>
+      <rich-text nodes="{{note.content || '<p>暂无内容</p>'}}" space="nbsp"></rich-text>
     </view>
     
     <!-- 操作按钮 -->

@@ -5,7 +5,12 @@ Page({
     title: '',
     content: '',
     isEdit: false,
-    autoSaveTimer: null
+    autoSaveTimer: null,
+    editorCtx: null,
+    formats: {},
+    fontSize: 'normal',
+    showColorPicker: false,
+    colors: ['#ffffff', '#f8bbd0', '#e1f5fe', '#f1f8e9', '#fff8e1', '#efebe9']
   },
 
   onLoad: function (options) {
@@ -47,6 +52,31 @@ Page({
     }
   },
 
+  // 编辑器初始化完成时触发
+  onEditorReady: function() {
+    const that = this;
+    wx.createSelectorQuery().select('#editor').context(function (res) {
+      that.setData({
+        editorCtx: res.context
+      });
+      
+      // 如果是编辑模式，设置编辑器内容
+      if (that.data.isEdit && that.data.content) {
+        // 判断内容是否为HTML格式
+        if (that.data.content.indexOf('<') !== -1 && that.data.content.indexOf('>') !== -1) {
+          that.data.editorCtx.setContents({
+            html: that.data.content
+          });
+        } else {
+          // 如果是纯文本，转换为HTML
+          that.data.editorCtx.setContents({
+            html: `<p>${that.data.content}</p>`
+          });
+        }
+      }
+    }).exec();
+  },
+
   // 标题输入事件
   onTitleInput: function (e) {
     this.setData({
@@ -56,9 +86,65 @@ Page({
 
   // 内容输入事件
   onContentInput: function (e) {
+    // 编辑器的输入事件会返回HTML内容
     this.setData({
-      content: e.detail.value
+      content: e.detail.html || ''
     });
+  },
+
+  // 设置字体大小
+  setFontSize: function(e) {
+    const size = e.currentTarget.dataset.size;
+    this.setData({
+      fontSize: size
+    });
+    
+    let fontSize;
+    switch(size) {
+      case 'small':
+        fontSize = '14px';
+        break;
+      case 'large':
+        fontSize = '18px';
+        break;
+      default:
+        fontSize = '16px';
+    }
+    
+    this.data.editorCtx.format('fontSize', fontSize);
+  },
+
+  // 显示颜色选择器
+  showColorPicker: function() {
+    this.setData({
+      showColorPicker: !this.data.showColorPicker
+    });
+  },
+
+  // 设置背景色
+  setBackgroundColor: function(e) {
+    const color = e.currentTarget.dataset.color;
+    this.data.editorCtx.format('backgroundColor', color);
+    this.setData({
+      showColorPicker: false
+    });
+  },
+
+  // 格式化功能
+  format: function(e) {
+    const { name, value } = e.currentTarget.dataset;
+    if (!name) return;
+    
+    this.data.editorCtx.format(name, value);
+    
+    // 更新格式状态
+    setTimeout(() => {
+      this.data.editorCtx.getFormat().then(res => {
+        this.setData({
+          formats: res
+        });
+      });
+    }, 100);
   },
 
   // 自动保存
