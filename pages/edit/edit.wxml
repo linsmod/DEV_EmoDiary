@@ -1,8 +1,14 @@
 <!--pages/edit/edit.wxml-->
 <view class="container">
-  <!-- 标题输入 -->
-  <view class="input-group">
-    <input class="title-input" placeholder="请输入标题" value="{{title}}" bindinput="onTitleInput" maxlength="100" />
+  <!-- 标题输入和保存按钮 -->
+  <view class="header-container">
+    <view class="input-group title-group">
+      <input class="title-input" placeholder="请输入标题" value="{{title}}" bindinput="onTitleInput" maxlength="100" />
+    </view>
+    <!-- 保存按钮 -->
+    <view class="save-button" bindtap="onSave">
+      保存
+    </view>
   </view>
   
   <!-- 内容输入 -->
@@ -13,6 +19,7 @@
             show-img-size 
             show-img-toolbar 
             show-img-resize
+            adjust-position="{{false}}"
             bindready="onEditorReady"
             bindinput="onContentInput">
     </editor>
@@ -80,14 +87,4 @@
     </view>
   </view>
   
-  <!-- 保存按钮 -->
-  <view class="save-button" bindtap="onSave">
-    保存笔记
-  </view>
-  
-  <!-- 提示信息 -->
-  <view class="tip-text">
-    <text wx:if="{{isEdit}}">编辑中，每10秒自动保存</text>
-    <text wx:else>创建中，每10秒自动保存</text>
-  </view>
 </view>

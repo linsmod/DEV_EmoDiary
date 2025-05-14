@@ -1,38 +1,71 @@
 /* pages/edit/edit.wxss */
 .container {
-  padding: 30rpx 20rpx;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 标题区域和保存按钮容器 */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background-color: white;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input-group {
-  width: 100%;
   background-color: white;
   border-radius: 10rpx;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.title-group {
+  flex: 1;
+  margin-right: 20rpx;
+  padding-right: 20rpx;
 }
 
 .title-input {
   width: 100%;
   font-size: 34rpx;
   font-weight: 500;
-  padding: 10rpx 20rpx;
+  padding: 10rpx 0;
+}
+
+/* 右上角保存按钮 */
+.save-button {
+  background-color: #3498db;
+  color: white;
+  text-align: center;
+  padding: 20rpx 30rpx;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  box-shadow: 0 4rpx 10rpx rgba(52, 152, 219, 0.3);
+  white-space: nowrap;
 }
 
 /* 工具栏样式 */
 .toolbar {
   width: 100%;
   background-color: #f8f8f8;
-  border-radius: 10rpx;
+  border-radius: 10rpx 10rpx 0 0;
   padding: 10rpx;
-  margin-top: 0rpx;
-  margin-bottom: 20rpx;
   box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  position: relative;
-  z-index: 10;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
 }
 
 .toolbar-group {
@@ -45,8 +78,8 @@
   height: 60rpx;
   line-height: 60rpx;
   text-align: center;
-  padding: 0 0rpx;
-  margin: 0 0rpx;
+  padding: 0 10rpx;
+  margin: 0 5rpx;
   border-radius: 8rpx;
   font-size: 28rpx;
   background-color: white;
@@ -74,6 +107,10 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  position: fixed;
+  bottom: 120rpx;
+  left: 0;
+  z-index: 110;
 }
 
 .color-item {
@@ -85,28 +122,26 @@
 }
 
 .content-group {
-  min-height: 500rpx;
+  flex: 1;
+  padding: 0;
+  background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: 0;
 }
 
 .content-editor {
+  flex: 1;
   width: 100%;
-  min-height: 480rpx;
-  height: auto;
   font-size: 30rpx;
   line-height: 1.6;
-  padding: 0 20rpx; /* 增加侧边padding */
-}
-
-.save-button {
-  width: 100%;
-  background-color: #3498db;
-  color: white;
-  text-align: center;
-  padding: 25rpx 0;
-  border-radius: 10rpx;
-  margin: 30rpx 0;
-  font-size: 32rpx;
-  box-shadow: 0 4rpx 10rpx rgba(52, 152, 219, 0.3);
+  padding: 20rpx;
+  box-sizing: border-box;
+  min-height: 300rpx;
+  height: 100%;
 }
 
 .tip-text {
