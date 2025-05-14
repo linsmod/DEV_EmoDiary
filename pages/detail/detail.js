@@ -36,6 +36,15 @@ Page({
     const note = notes.find(n => n.id === this.data.id);
     
     if (note) {
+      // 计算纯文本字数
+      const getTextLength = (html) => {
+        if (!html) return 0;
+        const text = html.replace(/<[^>]+>/g, '');
+        return text.length;
+      };
+      
+      note.wordCount = getTextLength(note.content);
+      
       this.setData({
         note,
         loading: false

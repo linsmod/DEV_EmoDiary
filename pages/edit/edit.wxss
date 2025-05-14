@@ -74,16 +74,48 @@
 }
 
 .toolbar-item {
-  min-width: 60rpx;
-  height: 60rpx;
-  line-height: 60rpx;
-  text-align: center;
+  min-width: 70rpx;
+  height: 70rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0 10rpx;
   margin: 0 5rpx;
   border-radius: 8rpx;
-  font-size: 28rpx;
   background-color: white;
+}
+
+.icon-text {
+  font-size: 32rpx;
+  font-weight: bold;
   color: #333;
+}
+
+.icon-bold {
+  font-weight: 900;
+}
+
+.icon-italic {
+  font-style: italic;
+}
+
+.icon-image {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+/* SVG图标颜色控制 */
+.toolbar-item image {
+  color: #333;
+}
+
+.toolbar-item.active image {
+  color: #3498db;
+}
+
+.toolbar-item.active .icon-text,
+.toolbar-item.active .icon-image {
+  color: #3498db;
 }
 
 .toolbar-item.active {

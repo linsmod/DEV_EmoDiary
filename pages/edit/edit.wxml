@@ -4,6 +4,7 @@
   <view class="header-container">
     <view class="input-group title-group">
       <input class="title-input" placeholder="请输入标题" value="{{title}}" bindinput="onTitleInput" maxlength="100" />
+      <view class="word-count">{{title.length || 0}}/100</view>
     </view>
     <!-- 保存按钮 -->
     <view class="save-button" bindtap="onSave">
@@ -40,49 +41,66 @@
   <view class="toolbar">
     <view class="toolbar-group">
       <!-- 字体大小 -->
-      <view class="toolbar-item {{fontSize === 'small' ? 'active' : ''}}" bindtap="setFontSize" data-size="small">小</view>
-      <view class="toolbar-item {{fontSize === 'normal' ? 'active' : ''}}" bindtap="setFontSize" data-size="normal">中</view>
-      <view class="toolbar-item {{fontSize === 'large' ? 'active' : ''}}" bindtap="setFontSize" data-size="large">大</view>
+      <view class="toolbar-item {{fontSize === 'small' ? 'active' : ''}}" bindtap="setFontSize" data-size="small">
+        <text class="icon-text">A-</text>
+      </view>
+      <view class="toolbar-item {{fontSize === 'normal' ? 'active' : ''}}" bindtap="setFontSize" data-size="normal">
+        <text class="icon-text">A</text>
+      </view>
+      <view class="toolbar-item {{fontSize === 'large' ? 'active' : ''}}" bindtap="setFontSize" data-size="large">
+        <text class="icon-text">A+</text>
+      </view>
     </view>
     
     <view class="toolbar-group">
       <!-- 加粗 -->
       <view class="toolbar-item {{formats.bold ? 'active' : ''}}" bindtap="format" data-name="bold">
-        B
+        <text class="icon-text icon-bold">B</text>
       </view>
       <!-- 斜体 -->
       <view class="toolbar-item {{formats.italic ? 'active' : ''}}" bindtap="format" data-name="italic">
-        I
+        <text class="icon-text icon-italic">I</text>
       </view>
     </view>
     
     <view class="toolbar-group">
       <!-- 对齐方式 -->
       <view class="toolbar-item {{formats.align === 'left' ? 'active' : ''}}" bindtap="format" data-name="align" data-value="left">
-        ←
+        <image class="icon-image" src="/images/icons/align-left.svg" mode="aspectFit"></image>
       </view>
       <view class="toolbar-item {{formats.align === 'center' ? 'active' : ''}}" bindtap="format" data-name="align" data-value="center">
-        ⟷
+        <image class="icon-image" src="/images/icons/align-center.svg" mode="aspectFit"></image>
       </view>
       <view class="toolbar-item {{formats.align === 'right' ? 'active' : ''}}" bindtap="format" data-name="align" data-value="right">
-        →
+        <image class="icon-image" src="/images/icons/align-right.svg" mode="aspectFit"></image>
       </view>
     </view>
     
     <view class="toolbar-group">
       <!-- 列表 -->
       <view class="toolbar-item {{formats.list === 'ordered' ? 'active' : ''}}" bindtap="format" data-name="list" data-value="ordered">
-        1.
+        <image class="icon-image" src="/images/icons/list-ordered.svg" mode="aspectFit"></image>
       </view>
       <view class="toolbar-item {{formats.list === 'bullet' ? 'active' : ''}}" bindtap="format" data-name="list" data-value="bullet">
-        •
+        <image class="icon-image" src="/images/icons/list-bullet.svg" mode="aspectFit"></image>
       </view>
     </view>
     
     <view class="toolbar-group">
       <!-- 背景色 -->
       <view class="toolbar-item color-picker" bindtap="showColorPicker">
-        背景
+        <image class="icon-image" src="/images/icons/color.svg" mode="aspectFit"></image>
+      </view>
+    </view>
+    
+    <view class="toolbar-group">
+      <!-- 撤销 -->
+      <view class="toolbar-item" bindtap="undo">
+        <image class="icon-image" src="/images/icons/undo.svg" mode="aspectFit"></image>
+      </view>
+      <!-- 重做 -->
+      <view class="toolbar-item" bindtap="redo">
+        <image class="icon-image" src="/images/icons/redo.svg" mode="aspectFit"></image>
       </view>
     </view>
   </view>

@@ -10,7 +10,10 @@ Page({
     formats: {},
     fontSize: 'normal',
     showColorPicker: false,
-    colors: ['#ffffff', '#f8bbd0', '#e1f5fe', '#f1f8e9', '#fff8e1', '#efebe9']
+    colors: ['#ffffff', '#f8bbd0', '#e1f5fe', '#f1f8e9', '#fff8e1', '#efebe9'],
+    wordCount: 0, // 内容字数统计
+    canUndo: false, // 是否可以撤销
+    canRedo: false  // 是否可以重做
   },
 
   onLoad: function (options) {
@@ -88,8 +91,12 @@ Page({
   onContentInput: function (e) {
     // 编辑器的输入事件会返回HTML内容
     this.setData({
-      content: e.detail.html || ''
+      content: e.detail.html || '',
+      wordCount: this.getTextLength(e.detail.html || '')
     });
+    
+    // 更新撤销/重做状态
+    this.updateUndoRedoStatus();
   },
 
   // 设置字体大小
@@ -227,5 +234,53 @@ Page({
   // 保存按钮点击事件
   onSave: function () {
     this.saveNote();
+  },
+
+  // 更新撤销/重做状态
+  updateUndoRedoStatus: function() {
+    if (!this.data.editorCtx) return;
+    
+    this.data.editorCtx.canUndo().then(res => {
+      this.setData({ canUndo: res });
+    });
+    this.data.editorCtx.canRedo().then(res => {
+      this.setData({ canRedo: res });
+    });
+  },
+
+  // 撤销操作
+  undo: function() {
+    if (!this.data.editorCtx) return;
+    
+    this.data.editorCtx.undo();
+    this.updateUndoRedoStatus();
+  },
+
+  // 重做操作
+  redo: function() {
+    if (!this.data.editorCtx) return;
+    
+    this.data.editorCtx.redo();
+    this.updateUndoRedoStatus();
+  },
+
+  // 计算纯文本长度（去除HTML标签）
+  getTextLength: function(html) {
+    if (!html) return 0;
+    // 简单去除HTML标签
+    const text = html.replace(/<[^>]+>/g, '');
+    return text.length;
+  },
+
+  // 页面卸载时自动保存
+  onUnload: function() {
+    if (this.data.title || this.data.content) {
+      this.saveNote(true);
+    }
+    
+    // 清除定时器
+    if (this.data.autoSaveTimer) {
+      clearInterval(this.data.autoSaveTimer);
+    }
   }
 })

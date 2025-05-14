@@ -1,7 +1,7 @@
 <!--pages/detail/detail.wxml-->
 <view class="container">
   <!-- 笔记详情 -->
-  <view class="note-detail" wx:if="{{!loading && note}}">
+  <view class="note-detail" wx:if="{{!loading && note}}" bindtap="onEdit">
     <!-- 标题 -->
     <view class="note-title">
       {{note.title || '无标题笔记'}}
@@ -9,24 +9,12 @@
     
     <!-- 更新时间 -->
     <view class="note-time">
-      更新于 {{note.updateTimeStr}}
+      更新于 {{note.updateTimeStr}} · {{note.wordCount || 0}}字
     </view>
     
     <!-- 内容 -->
     <view class="note-content">
       <rich-text nodes="{{note.content || '<p>暂无内容</p>'}}" space="nbsp"></rich-text>
-    </view>
-    
-    <!-- 操作按钮 -->
-    <view class="action-buttons">
-      <view class="action-btn edit-btn" bindtap="onEdit">
-        <text class="btn-icon">✎</text>
-        <text>编辑</text>
-      </view>
-      <view class="action-btn delete-btn" bindtap="onDelete">
-        <text class="btn-icon">🗑</text>
-        <text>删除</text>
-      </view>
     </view>
   </view>
   
