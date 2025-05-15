@@ -40,6 +40,19 @@ Page({
     this.notes = wx.getStorageSync('notes') || [];
   },
 
+  // 新增获取行号的方法
+  getLineNumber(text, position) {
+    const lines = text.split('\n');
+    let charCount = 0;
+    for (let i = 0; i < lines.length; i++) {
+      charCount += lines[i].length + 1; // +1 for newline
+      if (charCount > position) {
+        return i + 1; // 返回1-based行号
+      }
+    }
+    return 1;
+  },
+
   onInput(e) {
     const keyword = e.detail.value.trim();
     this.setData({ keyword });
@@ -66,25 +79,18 @@ Page({
     }, 300);
   },
 
-  onSearch(e) {
-    // 从事件参数中获取keyword，如果没有则使用data中的keyword
-    const keyword = e?.currentTarget?.dataset?.keyword || this.data.keyword;
-    
-    if (!keyword) {
+  onSearch() {
+    if (!this.data.keyword) {
       wx.showToast({ title: '请输入搜索关键词', icon: 'none' });
       return;
     }
-    
     this.setData({
-      keyword, // 更新keyword到data
       loading: true,
       results: [],
       currentPage: 0,
-      hasMore: true,
-      showRecent: false
+      hasMore: true
     });
     this.searchNotes();
-    this.saveSearchKeyword(keyword);
   },
 
   searchNotes() {
@@ -110,27 +116,26 @@ Page({
           );
         });
 
-        // 生成预览片段
-        const firstMatch = matches[0];
-        const previewStart = Math.max(0, firstMatch.index - 20);
-        const previewEnd = Math.min(plainText.length, firstMatch.index + keyword.length + 50);
-        let previewText = plainText.substring(previewStart, previewEnd);
-        if (previewStart > 0) previewText = '...' + previewText;
-        if (previewEnd < plainText.length) previewText = previewText + '...';
-
-        // 高亮预览文本
-        previewText = previewText.replace(
-          regex,
-          `<span class="highlight">${keyword}</span>`
-        );
+        // 生成匹配片段
+        const snippets = matches.map(match => {
+          const snippetText = plainText.substring(
+            Math.max(0, match.index - 20),
+            Math.min(plainText.length, match.index + keyword.length + 50)
+          );
+          return {
+            text: snippetText,
+            lineNumber: this.getLineNumber(plainText, match.index),
+            startPos: match.index,
+            endPos: match.index + keyword.length
+          };
+        });
 
         matchedNotes.push({
           id: note.id,
           title: note.title,
-          preview: previewText,
-          fullContent: highlightedContent,
+          snippets,
           matchCount: matches.length,
-          firstMatchPos: firstMatch.index
+          firstMatchPos: matches[0].index
         });
       }
     });
@@ -157,7 +162,7 @@ Page({
     const note = this.data.results[index];
     
     wx.navigateTo({
-      url: "/pages/detail/detail?id=" + id + "&highlight=" + this.data.keyword + "&scrollPos=" + note.firstMatchPos,
+      url: `/pages/detail/detail?id=${id}&line=${note.snippets[0].lineNumber}&highlight=${this.data.keyword}`,
     });
   },
 

@@ -5,7 +5,7 @@ Page({
     note: null,
     loading: true,
     highlight: '',
-    scrollPos: 0,
+    targetLine: 0,
     scrollId: '',
     scrollIntoView: ''
   },
@@ -15,7 +15,7 @@ Page({
       this.setData({
         id: options.id,
         highlight: options.highlight || '',
-        scrollPos: parseInt(options.scrollPos) || 0,
+        targetLine: parseInt(options.line) || 0,
         scrollId: options.highlight ? "highlight-" + Date.now() : ""
       });
       this.loadNoteDetail();
@@ -25,9 +25,20 @@ Page({
     }
   },
 
-  onShow: function () {
-    if (this.data.id) {
-      this.loadNoteDetail();
+  onReady: function() {
+    if (this.data.targetLine > 0) {
+      setTimeout(() => {
+        const query = wx.createSelectorQuery();
+        query.select(`#line-${this.data.targetLine}`).boundingClientRect();
+        query.exec(res => {
+          if (res[0]) {
+            wx.pageScrollTo({
+              scrollTop: res[0].top - 50,
+              duration: 300
+            });
+          }
+        });
+      }, 500);
     }
   },
 
@@ -37,25 +48,42 @@ Page({
 
     if (note) {
       const getTextLength = (html) => {
-        if (!html) return 0;
-        return html.replace(/<[^>]+>/g, '').length;
+        return html ? html.replace(/<[^>]+>/g, '').length : 0;
       };
 
+      // 处理内容为行数组
+      let lines = note.content.split('\n').map(line => {
+        // 每行转换为rich-text支持的简单格式
+        return [{
+          name: 'div',
+          attrs: { class: 'line-content' },
+          children: [{ type: 'text', text: line }]
+        }];
+      });
+
+      // 处理高亮
       if (this.data.highlight && this.data.scrollId) {
         const regex = new RegExp(this.data.highlight, 'gi');
-        note.content = note.content.replace(
-          regex,
-          '<span id="' + this.data.scrollId + '" class="highlight">$&</span>'
-        );
+        lines = lines.map(lineNodes => {
+          const lineText = lineNodes[0].children[0].text;
+          const highlighted = lineText.replace(regex, 
+            `<span class="highlight">$&</span>`);
+          return [{
+            name: 'div',
+            attrs: { class: 'line-content' },
+            children: [{ type: 'html', text: highlighted }]
+          }];
+        });
       }
 
       note.wordCount = getTextLength(note.content);
+      note.lines = lines;
 
       this.setData({
         note,
         loading: false
       }, () => {
-        if (this.data.scrollPos > 0) {
+        if (this.data.scrollId) {
           setTimeout(() => {
             this.setData({ scrollIntoView: this.data.scrollId });
           }, 300);

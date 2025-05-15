@@ -28,9 +28,16 @@
     <!-- 搜索结果列表 -->
     <scroll-view scroll-y class="result-list" bindscrolltolower="onReachBottom">
       <block wx:for="{{results}}" wx:key="id">
-        <view class="result-item" bindtap="onItemTap" data-id="{{item.id}}" data-index="{{index}}">
+        <view class="result-group">
           <view class="result-title">{{item.title}}</view>
-          <rich-text nodes="{{item.preview}}" class="result-preview"></rich-text>
+          <view class="match-count">共找到 {{item.matchCount}} 处匹配</view>
+          
+          <block wx:for="{{item.snippets}}" wx:key="position" wx:for-index="snippetIndex">
+            <view class="result-item" bindtap="onItemTap" data-id="{{item.id}}" data-index="{{index}}" data-snippet-index="{{snippetIndex}}">
+              <rich-text nodes="{{item.text}}" class="result-preview"></rich-text>
+              <view class="snippet-divider"></view>
+            </view>
+          </block>
         </view>
       </block>
 

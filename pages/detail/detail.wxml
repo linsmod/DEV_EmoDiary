@@ -19,7 +19,19 @@
       scroll-into-view="{{scrollIntoView}}"
       scroll-top="{{scrollPos}}"
     >
-      <rich-text nodes="{{note.content || '<p>暂无内容</p>'}}" space="nbsp"></rich-text>
+      <block wx:if="{{note.lines}}">
+        <view 
+          wx:for="{{note.lines}}" 
+          wx:key="index"
+          id="line-{{index+1}}"
+          class="content-line"
+        >
+          <rich-text nodes="{{item}}" space="nbsp"></rich-text>
+        </view>
+      </block>
+      <block wx:else>
+        <rich-text nodes="{{note.content || '<p>暂无内容</p>'}}" space="nbsp"></rich-text>
+      </block>
     </scroll-view>
   </view>
   
