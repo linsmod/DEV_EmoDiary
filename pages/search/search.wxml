@@ -1,8 +1,9 @@
+<!-- 主容器 -->
 <view class="container">
-  <!-- 搜索框 -->
+  <!-- 固定搜索栏 -->
   <view class="search-bar">
     <input 
-      placeholder="输入关键词搜索笔记" 
+      placeholder="搜索笔记" 
       bindinput="onInput" 
       bindconfirm="onSearch"
       confirm-type="search"
@@ -12,32 +13,36 @@
     <button class="primary-btn" bindtap="onSearch" style="margin-left: 20rpx;">搜索</button>
   </view>
 
-  <!-- 搜索结果 -->
-  <scroll-view 
-    scroll-y 
-    class="result-list" 
-    bindscrolltolower="onReachBottom"
-  >
-    <block wx:for="{{results}}" wx:key="id">
-      <view 
-        class="result-item" 
-        bindtap="onItemTap" 
-        data-id="{{item.id}}"
-        data-index="{{index}}"
-      >
-        <view class="result-title">{{item.title}}</view>
-        <rich-text nodes="{{item.preview}}" class="result-preview"></rich-text>
+  <!-- 内容区域 -->
+  <view class="content-area">
+    <!-- 最近搜索 -->
+    <view class="recent-searches" wx:if="{{showRecent && recentSearches.length}}">
+      <view class="recent-title">最近搜索</view>
+      <view wx:for="{{recentSearches}}" wx:key="time" class="recent-item">
+        <text bindtap="onSearch" data-keyword="{{item.keyword}}">{{item.keyword}}</text>
+        <image src="/images/close.svg" bindtap="removeSearchKeyword" data-index="{{index}}" class="delete-icon"></image>
       </view>
-    </block>
+      <view class="clear-all" bindtap="clearRecentSearches">清空搜索历史</view>
+    </view>
 
-    <!-- 加载状态 -->
-    <view wx:if="{{loading}}" class="loading">加载中...</view>
-    <view wx:if="{{!hasMore && results.length > 0}}" class="no-more">没有更多了</view>
-  </scroll-view>
+    <!-- 搜索结果列表 -->
+    <scroll-view scroll-y class="result-list" bindscrolltolower="onReachBottom">
+      <block wx:for="{{results}}" wx:key="id">
+        <view class="result-item" bindtap="onItemTap" data-id="{{item.id}}" data-index="{{index}}">
+          <view class="result-title">{{item.title}}</view>
+          <rich-text nodes="{{item.preview}}" class="result-preview"></rich-text>
+        </view>
+      </block>
 
-  <!-- 空状态 -->
-  <view wx:if="{{!loading && results.length === 0}}" class="empty">
-    <image src="/images/search-empty.png" mode="aspectFit"></image>
-    <text>暂无搜索结果</text>
+      <!-- 加载状态 -->
+      <view wx:if="{{loading}}" class="loading">加载中...</view>
+      <view wx:if="{{!hasMore && results.length > 0}}" class="no-more">没有更多了</view>
+    </scroll-view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{!loading && results.length === 0}}" class="empty">
+      <image src="/images/search-empty.svg" mode="aspectFit"></image>
+      <text>暂无搜索结果</text>
+    </view>
   </view>
 </view>

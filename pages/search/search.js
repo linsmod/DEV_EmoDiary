@@ -6,11 +6,34 @@ Page({
     loading: false,
     hasMore: true,
     pageSize: 10,
-    currentPage: 0
+    currentPage: 0,
+    recentSearches: [],
+    showRecent: true
   },
 
   onLoad() {
     this.loadNotes();
+    this.loadRecentSearches();
+  },
+
+  loadRecentSearches() {
+    const searches = wx.getStorageSync('recentSearches') || [];
+    this.setData({ recentSearches: searches });
+  },
+
+  saveSearchKeyword(keyword) {
+    let searches = wx.getStorageSync('recentSearches') || [];
+    // 去重
+    searches = searches.filter(item => item.keyword !== keyword);
+    // 添加到开头
+    searches.unshift({
+      keyword,
+      time: new Date().getTime()
+    });
+    // 限制数量
+    searches = searches.slice(0, 10);
+    wx.setStorageSync('recentSearches', searches);
+    this.setData({ recentSearches: searches });
   },
 
   loadNotes() {
@@ -29,11 +52,16 @@ Page({
           loading: true,
           results: [],
           currentPage: 0,
-          hasMore: true
+          hasMore: true,
+          showRecent: false
         });
         this.searchNotes();
+        this.saveSearchKeyword(keyword);
       } else {
-        this.setData({ results: [] });
+        this.setData({ 
+          results: [],
+          showRecent: true 
+        });
       }
     }, 300);
   },
@@ -129,5 +157,30 @@ Page({
   onPullDownRefresh() {
     this.onSearch();
     wx.stopPullDownRefresh();
+  },
+
+  // 删除单个搜索记录
+  removeSearchKeyword(e) {
+    const { index } = e.currentTarget.dataset;
+    let searches = [...this.data.recentSearches];
+    searches.splice(index, 1);
+    wx.setStorageSync('recentSearches', searches);
+    this.setData({ recentSearches: searches });
+    wx.showToast({
+      title: '已删除',
+      icon: 'none',
+      duration: 1000
+    });
+  },
+
+  // 清空所有搜索记录
+  clearRecentSearches() {
+    wx.setStorageSync('recentSearches', []);
+    this.setData({ recentSearches: [] });
+    wx.showToast({
+      title: '已清空记录',
+      icon: 'none',
+      duration: 1000
+    });
   }
 })
