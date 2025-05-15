@@ -66,18 +66,25 @@ Page({
     }, 300);
   },
 
-  onSearch() {
-    if (!this.data.keyword) {
+  onSearch(e) {
+    // 从事件参数中获取keyword，如果没有则使用data中的keyword
+    const keyword = e?.currentTarget?.dataset?.keyword || this.data.keyword;
+    
+    if (!keyword) {
       wx.showToast({ title: '请输入搜索关键词', icon: 'none' });
       return;
     }
+    
     this.setData({
+      keyword, // 更新keyword到data
       loading: true,
       results: [],
       currentPage: 0,
-      hasMore: true
+      hasMore: true,
+      showRecent: false
     });
     this.searchNotes();
+    this.saveSearchKeyword(keyword);
   },
 
   searchNotes() {
