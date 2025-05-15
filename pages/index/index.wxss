@@ -183,6 +183,11 @@
   color: #333;
 }
 
+.action-cancel {
+  padding: 30rpx 40rpx;
+  margin-left: -20rpx;
+}
+
 .action-delete {
   color: #e74c3c;
   font-weight: 500;
