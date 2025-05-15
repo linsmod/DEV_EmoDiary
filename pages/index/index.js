@@ -169,7 +169,7 @@ Page({
     this.setData({
       notes: notes,
       selectedNotes: selectedNotes,
-      isSelectionMode: !isAllSelected || selectedNotes.length > 0
+      // isSelectionMode: !isAllSelected || selectedNotes.length > 0
     });
   },
 
