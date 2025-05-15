@@ -2,7 +2,9 @@
 Page({
   data: {
     notes: [],
-    loading: true
+    loading: true,
+    selectedNotes: [],
+    isSelectionMode: false
   },
 
   onLoad: function (options) {
@@ -91,6 +93,74 @@ Page({
   onSearchTap: function() {
     wx.navigateTo({
       url: "/pages/search/search"
+    });
+  },
+
+  // 长按笔记进入选择模式
+  onLongPressNote: function(e) {
+    const id = e.currentTarget.dataset.id;
+    const notes = this.data.notes.map(note => {
+      note.isSelected = note.id === id;
+      return note;
+    });
+    this.setData({
+      isSelectionMode: true,
+      notes: notes,
+      selectedNotes: [id]
+    });
+  },
+
+  // 切换笔记选中状态
+  toggleNoteSelection: function(e) {
+    const id = e.currentTarget.dataset.id;
+    let selectedNotes = [];
+    const notes = this.data.notes.map(note => {
+      if (note.id === id) {
+        note.isSelected = !note.isSelected;
+      }
+      if (note.isSelected) {
+        selectedNotes.push(note.id);
+      }
+      return note;
+    });
+    
+    this.setData({
+      notes: notes,
+      selectedNotes: selectedNotes,
+      isSelectionMode: selectedNotes.length > 0
+    });
+  },
+
+  // 批量删除选中的笔记
+  onBatchDelete: function() {
+    const that = this;
+    wx.showModal({
+      title: '确认删除',
+      content: `确定要删除选中的${this.data.selectedNotes.length}条笔记吗？`,
+      success: function (res) {
+        if (res.confirm) {
+          let notes = wx.getStorageSync('notes') || [];
+          notes = notes.filter(note => !that.data.selectedNotes.includes(note.id));
+          wx.setStorageSync('notes', notes);
+          that.setData({
+            selectedNotes: [],
+            isSelectionMode: false
+          });
+          that.loadNotes();
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success'
+          });
+        }
+      }
+    });
+  },
+
+  // 退出选择模式
+  exitSelectionMode: function() {
+    this.setData({
+      selectedNotes: [],
+      isSelectionMode: false
     });
   }
 })

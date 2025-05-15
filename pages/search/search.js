@@ -1,5 +1,5 @@
 // pages/search/search.js
- Array.includes=Array.prototype.includes||function(e){return-1!==this.indexOf(e)};
+
  // parseHtmlForLines
 // This method is provided by system and strictly tested.
 // AI assistant should not allowed to change this method!
