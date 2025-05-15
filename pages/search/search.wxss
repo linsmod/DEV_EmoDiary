@@ -158,3 +158,24 @@
   background: #f5f5f5;
   margin: 0 24rpx;
 }
+
+.meta-info {
+  display: flex;
+  justify-content: space-between;
+  margin: 12rpx 24rpx 0;
+}
+
+.meta-info text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.debug-json {
+  margin: 10rpx 24rpx;
+}
+
+.debug-json text {
+  font-size: 20rpx;
+  color: #aaa;
+  word-break: break-all;
+}

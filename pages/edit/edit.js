@@ -16,10 +16,38 @@ Page({
     canRedo: false  // 是否可以重做
   },
 
+  // 数据迁移：确保所有笔记都有有效ID
+  migrateNotes: function() {
+    let notes = wx.getStorageSync('notes') || [];
+    let needsUpdate = false;
+    
+    notes = notes.map(note => {
+      if (!note.id || typeof note.id !== 'string') {
+        needsUpdate = true;
+        return {
+          ...note,
+          id: Date.now().toString(),
+          // 为旧数据添加缺失的字段
+          createTime: note.createTime || Date.now(),
+          updateTime: note.updateTime || Date.now(),
+          updateTimeStr: note.updateTimeStr || new Date().toLocaleString()
+        };
+      }
+      return note;
+    });
+    
+    if (needsUpdate) {
+      wx.setStorageSync('notes', notes);
+    }
+    return notes;
+  },
+
   onLoad: function (options) {
+    // 先执行数据迁移
+    const notes = this.migrateNotes();
+    
     // 如果传入了id，说明是编辑现有笔记
     if (options.id) {
-      const notes = wx.getStorageSync('notes') || [];
       const note = notes.find(n => n.id === options.id);
       
       if (note) {

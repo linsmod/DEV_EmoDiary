@@ -79,16 +79,24 @@ Page({
     }, 300);
   },
 
-  onSearch() {
-    if (!this.data.keyword) {
+  onSearch(e) {
+    // 获取关键词：优先从点击事件获取，其次从搜索框获取
+    const keyword = e?.currentTarget?.dataset?.keyword || this.data.keyword;
+    
+    if (!keyword) {
       wx.showToast({ title: '请输入搜索关键词', icon: 'none' });
       return;
     }
+    
+    // 更新搜索框显示
+    this.setData({ keyword });
+    
     this.setData({
       loading: true,
       results: [],
       currentPage: 0,
-      hasMore: true
+      hasMore: true,
+      showRecent: false
     });
     this.searchNotes();
   },
@@ -101,6 +109,7 @@ Page({
 
     // 搜索逻辑
     this.notes.forEach(note => {
+      console.log('当前笔记:', JSON.parse(JSON.stringify(note))); // 完整调试日志
       // 去除HTML标签获取纯文本
       const plainText = note.content.replace(/<[^>]+>/g, '');
       const regex = new RegExp(keyword, 'gi');
@@ -117,12 +126,14 @@ Page({
         });
 
         // 生成匹配片段
+        // system: 注意一个笔记可以有多个搜索结果
         const snippets = matches.map(match => {
           const snippetText = plainText.substring(
             Math.max(0, match.index - 20),
             Math.min(plainText.length, match.index + keyword.length + 50)
           );
           return {
+            id: note.id,
             text: snippetText,
             lineNumber: this.getLineNumber(plainText, match.index),
             startPos: match.index,
@@ -131,7 +142,6 @@ Page({
         });
 
         matchedNotes.push({
-          id: note.id,
           title: note.title,
           snippets,
           matchCount: matches.length,
