@@ -167,12 +167,13 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 100rpx;
+  height: 120rpx;
   background-color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40rpx;
+  padding: 0 60rpx;
+  padding-bottom: env(safe-area-inset-bottom);
   box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
   z-index: 100;
 }
@@ -185,6 +186,24 @@
 .action-delete {
   color: #e74c3c;
   font-weight: 500;
+  padding: 20rpx 0;
+}
+
+.delete-btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-bottom: 8rpx;
+}
+
+.delete-text {
+  font-size: 24rpx;
 }
 
 /* 顶部操作栏 */

@@ -43,7 +43,10 @@
   <view class="action-bar" wx:if="{{isSelectionMode}}">
     <view class="action-item" bindtap="exitSelectionMode">取消</view>
     <view class="action-item action-delete" bindtap="onBatchDelete">
-      删除({{selectedNotes.length}})
+      <view class="delete-btn-content">
+        <image src="/images/delete.svg" mode="aspectFit" class="delete-icon"/>
+        <text class="delete-text">删除({{selectedNotes.length}})</text>
+      </view>
     </view>
   </view>
 

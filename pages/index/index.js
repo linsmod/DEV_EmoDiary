@@ -18,6 +18,7 @@ Page({
   // 加载所有笔记
   loadNotes: function () {
     const notes = wx.getStorageSync('notes') || [];
+    const selectedNotes = this.data.selectedNotes || [];
     
     // 处理笔记内容，将HTML转为纯文本用于预览
     const processedNotes = notes.map(note => {
@@ -41,13 +42,15 @@ Page({
       
       return {
         ...note,
-        contentText
+        contentText,
+        isSelected: selectedNotes.includes(note.id)
       };
     });
     
     this.setData({
       notes: processedNotes.sort((a, b) => b.updateTime - a.updateTime),
-      loading: false
+      loading: false,
+      isSelectionMode: selectedNotes.length > 0
     });
   },
 
