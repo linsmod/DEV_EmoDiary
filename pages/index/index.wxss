@@ -41,12 +41,17 @@
   border-radius: 10rpx;
   margin-bottom: 30rpx;
   box-shadow: 0 4rpx 10rpx rgba(52, 152, 219, 0.3);
+  line-height: 1;
 }
 
 .add-icon {
   font-size: 40rpx;
   margin-right: 10rpx;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  justify-content: center;
 }
 
 /* 笔记列表 */
@@ -159,6 +164,13 @@
   text-align: center;
   padding: 30rpx;
   color: #999;
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 /* 底部操作栏 */
