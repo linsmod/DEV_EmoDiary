@@ -121,7 +121,7 @@
 .highlight {
   color: #07C160;
   font-weight: bold;
-  background-color: rgba(7, 193, 96, 0.1);
+  background-color: rgba(7, 193, 96, 0.2);
   padding: 0 4rpx;
   border-radius: 4rpx;
 }

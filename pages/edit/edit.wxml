@@ -4,14 +4,17 @@
   <view class="header-container">
     <view class="input-group title-group">
       <input class="title-input" placeholder="请输入标题" value="{{title}}" bindinput="onTitleInput" maxlength="100" />
-      <view class="word-count">{{title.length || 0}}/100</view>
     </view>
     <!-- 保存按钮 -->
     <view class="primary-btn" bindtap="onSave" style="margin-left: 20rpx;">
       保存
     </view>
   </view>
-  
+  <view class="note-detail">
+    <view class="note-time">
+      最后更新 {{updateTimeStr}} · {{wordCount || 0}}字
+    </view>
+  </view>
   <!-- 内容输入 -->
   <view class="input-group content-group">
     <editor id="editor" 

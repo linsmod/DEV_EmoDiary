@@ -4,11 +4,10 @@
 }
 
 .note-detail {
-  width: 100%;
   background-color: white;
   border-radius: 10rpx;
   padding: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
   position: relative;
   transition: background-color 0.2s;
 }
@@ -17,7 +16,7 @@
   background-color: #f9f9f9;
 }
 
-.note-detail::after {
+/* .note-detail::after {
   content: "✎";
   position: absolute;
   bottom: 20rpx;
@@ -25,7 +24,7 @@
   font-size: 32rpx;
   color: #3498db;
   opacity: 0.6;
-}
+} */
 
 .note-title {
   font-size: 40rpx;

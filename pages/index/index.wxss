@@ -63,7 +63,7 @@
   background-color: white;
   border-radius: 10rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
   overflow: hidden;
   position: relative;
   border: 1rpx solid transparent;
@@ -186,7 +186,7 @@
   justify-content: space-between;
   padding: 0 60rpx;
   padding-bottom: env(safe-area-inset-bottom);
-  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.2);
   z-index: 100;
 }
 
@@ -232,7 +232,7 @@
   background-color: white;
   margin-bottom: 20rpx;
   border-radius: 10rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
 }
 
 .top-action-item {

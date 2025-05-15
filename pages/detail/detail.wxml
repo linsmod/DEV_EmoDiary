@@ -9,7 +9,7 @@
     
     <!-- 更新时间 -->
     <view class="note-time">
-      更新于 {{note.updateTimeStr}} · {{note.wordCount || 0}}字
+      最后更新 {{note.updateTimeStr}} · {{note.wordCount || 0}}字
     </view>
     
     <!-- 内容 -->
@@ -19,7 +19,7 @@
       scroll-into-view="{{scrollIntoView}}"
       scroll-top="{{scrollPos}}"
     >
-      <block wx:if="{{note.lines}}">
+      <!-- <block wx:if="{{note.lines}}">
         <view 
           wx:for="{{note.lines}}" 
           wx:key="index"
@@ -28,8 +28,8 @@
         >
           <rich-text nodes="{{item}}" space="nbsp"></rich-text>
         </view>
-      </block>
-      <block wx:else>
+      </block> -->
+      <block>
         <rich-text nodes="{{note.content || '<p>暂无内容</p>'}}" space="nbsp"></rich-text>
       </block>
     </scroll-view>
