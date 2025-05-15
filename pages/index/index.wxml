@@ -1,7 +1,7 @@
 <!--pages/index/index.wxml-->
 <view class="container">
   <!-- 新建笔记按钮 -->
-  <view class="primary-btn" bindtap="onNewNote" style="position: fixed; right: 30rpx; bottom: 30rpx;">
+  <view class="primary-btn" wx:if="{{!isSelectionMode}}" bindtap="onNewNote" style="position: fixed; right: 30rpx; bottom: 30rpx;">
     <text class="add-icon">+</text>
     <text>新建笔记</text>
   </view>
