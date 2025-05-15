@@ -6,8 +6,14 @@
     <text>新建笔记</text>
   </view>
 
-  <!-- 搜索入口 -->
-  <view class="search-bar" bindtap="onSearchTap">
+  <!-- 顶部操作栏 -->
+  <view class="top-action-bar" wx:if="{{isSelectionMode}}">
+    <view class="top-action-item" bindtap="exitSelectionMode">取消</view>
+    <view class="top-action-item top-action-select" bindtap="onSelectAll">
+      {{notes.length === selectedNotes.length ? '取消全选' : '全选'}}
+    </view>
+  </view>
+  <view class="search-bar" wx:else bindtap="onSearchTap">
     <input placeholder="搜索笔记" disabled/>
     <image class="search-icon" src="/images/search.svg" mode="aspectFit"></image>
   </view>

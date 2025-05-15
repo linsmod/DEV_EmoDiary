@@ -156,9 +156,28 @@ Page({
     });
   },
 
+  // 全选/取消全选笔记
+  onSelectAll: function() {
+    const isAllSelected = this.data.notes.length === this.data.selectedNotes.length;
+    const notes = this.data.notes.map(note => {
+      note.isSelected = !isAllSelected;
+      return note;
+    });
+    const selectedNotes = isAllSelected ? [] : notes.map(note => note.id);
+    this.setData({
+      notes: notes,
+      selectedNotes: selectedNotes,
+      isSelectionMode: !isAllSelected || selectedNotes.length > 0
+    });
+  },
+
   // 退出选择模式
   exitSelectionMode: function() {
     this.setData({
+      notes: this.data.notes.map(note => {
+        note.isSelected = false;
+        return note;
+      }),
       selectedNotes: [],
       isSelectionMode: false
     });
