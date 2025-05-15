@@ -9,6 +9,7 @@
       confirm-type="search"
       auto-focus
       focus="{{true}}"
+      value="{{keyword}}"
     />
     <button class="primary-btn" bindtap="onSearch" style="margin-left: 20rpx;">搜索</button>
   </view>
