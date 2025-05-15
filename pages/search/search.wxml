@@ -35,11 +35,11 @@
           <block wx:for="{{item.snippets}}" wx:key="position" wx:for-index="snippetIndex">
             <view class="result-item" bindtap="onItemTap" data-id="{{item.id}}" data-index="{{index}}" data-snippet-index="{{snippetIndex}}">
               <rich-text nodes="{{item.text}}" class="result-preview"></rich-text>
-              <!-- <view class="meta-info">
+              <view class="meta-info">
                 <text>[ID:{{item.id}}]</text>
                 <text>行{{item.lineNumber}}:{{item.startPos}}-{{item.endPos}}</text>
               </view>
-              <view class="debug-json">
+              <!-- <view class="debug-json">
                 <text>调试信息:</text>
                 <text>{{JSON.stringify(item)}}</text>
               </view> -->
