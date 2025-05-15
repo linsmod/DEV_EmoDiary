@@ -1,9 +1,15 @@
 <!--pages/index/index.wxml-->
 <view class="container">
   <!-- 新建笔记按钮 -->
-  <view class="add-button" bindtap="onNewNote">
+  <view class="primary-btn" bindtap="onNewNote" style="position: fixed; right: 30rpx; bottom: 30rpx;">
     <text class="add-icon">+</text>
     <text>新建笔记</text>
+  </view>
+
+  <!-- 搜索入口 -->
+  <view class="search-bar" bindtap="onSearchTap">
+    <input placeholder="搜索笔记" disabled/>
+    <image class="search-icon" src="/images/search.svg" mode="aspectFit"></image>
   </view>
 
   <!-- 笔记列表 -->

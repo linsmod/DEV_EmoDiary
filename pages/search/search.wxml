@@ -1,0 +1,43 @@
+<view class="container">
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <input 
+      placeholder="输入关键词搜索笔记" 
+      bindinput="onInput" 
+      bindconfirm="onSearch"
+      confirm-type="search"
+      auto-focus
+      focus="{{true}}"
+    />
+    <button class="primary-btn" bindtap="onSearch" style="margin-left: 20rpx;">搜索</button>
+  </view>
+
+  <!-- 搜索结果 -->
+  <scroll-view 
+    scroll-y 
+    class="result-list" 
+    bindscrolltolower="onReachBottom"
+  >
+    <block wx:for="{{results}}" wx:key="id">
+      <view 
+        class="result-item" 
+        bindtap="onItemTap" 
+        data-id="{{item.id}}"
+        data-index="{{index}}"
+      >
+        <view class="result-title">{{item.title}}</view>
+        <rich-text nodes="{{item.preview}}" class="result-preview"></rich-text>
+      </view>
+    </block>
+
+    <!-- 加载状态 -->
+    <view wx:if="{{loading}}" class="loading">加载中...</view>
+    <view wx:if="{{!hasMore && results.length > 0}}" class="no-more">没有更多了</view>
+  </scroll-view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{!loading && results.length === 0}}" class="empty">
+    <image src="/images/search-empty.png" mode="aspectFit"></image>
+    <text>暂无搜索结果</text>
+  </view>
+</view>

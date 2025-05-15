@@ -60,7 +60,7 @@ Page({
   onViewNote: function (e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({
-      url: `/pages/detail/detail?id=${id}`
+      url: "/pages/detail/detail?id=" + id
     });
   },
 
@@ -84,6 +84,13 @@ Page({
           });
         }
       }
+    });
+  },
+
+  // 跳转到搜索页面
+  onSearchTap: function() {
+    wx.navigateTo({
+      url: "/pages/search/search"
     });
   }
 })
