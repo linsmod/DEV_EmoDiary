@@ -129,8 +129,7 @@ Page({
     
     this.setData({
       notes: notes,
-      selectedNotes: selectedNotes,
-      isSelectionMode: selectedNotes.length > 0
+      selectedNotes: selectedNotes
     });
   },
 
