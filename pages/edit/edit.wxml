@@ -42,20 +42,13 @@
   
   <!-- 富文本工具栏 -->
   <view class="toolbar">
-    <view class="toolbar-group">
-      <!-- 字体大小 -->
-      <view class="toolbar-item {{fontSize === 'small' ? 'active' : ''}}" bindtap="setFontSize" data-size="small">
-        <text class="icon-text">A-</text>
+      <!-- 字体大小 (合并为一个按钮) -->
+      <view class="toolbar-item" bindtap="toggleFontSize">
+        <text class="icon-text" wx:if="{{activeFontSize === 'small'}}">A-</text>
+        <text class="icon-text" wx:elif="{{activeFontSize === 'normal'}}">A</text>
+        <text class="icon-text" wx:elif="{{activeFontSize === 'large'}}">A+</text>
       </view>
-      <view class="toolbar-item {{fontSize === 'normal' ? 'active' : ''}}" bindtap="setFontSize" data-size="normal">
-        <text class="icon-text">A</text>
-      </view>
-      <view class="toolbar-item {{fontSize === 'large' ? 'active' : ''}}" bindtap="setFontSize" data-size="large">
-        <text class="icon-text">A+</text>
-      </view>
-    </view>
     
-    <view class="toolbar-group">
       <!-- 加粗 -->
       <view class="toolbar-item {{formats.bold ? 'active' : ''}}" bindtap="format" data-name="bold">
         <text class="icon-text icon-bold">B</text>
@@ -64,39 +57,26 @@
       <view class="toolbar-item {{formats.italic ? 'active' : ''}}" bindtap="format" data-name="italic">
         <text class="icon-text icon-italic">I</text>
       </view>
-    </view>
     
-    <view class="toolbar-group">
-      <!-- 对齐方式 -->
-      <view class="toolbar-item {{formats.align === 'left' ? 'active' : ''}}" bindtap="format" data-name="align" data-value="left">
-        <image class="icon-image" src="/images/icons/align-left.svg" mode="aspectFit"></image>
+      <!-- 对齐方式 (合并为一个按钮) -->
+      <view class="toolbar-item" bindtap="toggleAlign">
+        <image class="icon-image" wx:if="{{activeAlign === 'left'}}" src="/images/icons/align-left.svg" mode="aspectFit"></image>
+        <image class="icon-image" wx:elif="{{activeAlign === 'center'}}" src="/images/icons/align-center.svg" mode="aspectFit"></image>
+        <image class="icon-image" wx:elif="{{activeAlign === 'right'}}" src="/images/icons/align-right.svg" mode="aspectFit"></image>
       </view>
-      <view class="toolbar-item {{formats.align === 'center' ? 'active' : ''}}" bindtap="format" data-name="align" data-value="center">
-        <image class="icon-image" src="/images/icons/align-center.svg" mode="aspectFit"></image>
-      </view>
-      <view class="toolbar-item {{formats.align === 'right' ? 'active' : ''}}" bindtap="format" data-name="align" data-value="right">
-        <image class="icon-image" src="/images/icons/align-right.svg" mode="aspectFit"></image>
-      </view>
-    </view>
     
-    <view class="toolbar-group">
-      <!-- 列表 -->
-      <view class="toolbar-item {{formats.list === 'ordered' ? 'active' : ''}}" bindtap="format" data-name="list" data-value="ordered">
-        <image class="icon-image" src="/images/icons/list-ordered.svg" mode="aspectFit"></image>
+      <!-- 列表 (合并为一个按钮，支持三种状态) -->
+      <view class="toolbar-item {{activeList ? 'active' : ''}}" bindtap="toggleList">
+        <image class="icon-image" wx:if="{{activeList === 'ordered'}}" src="/images/icons/list-ordered.svg" mode="aspectFit"></image>
+        <image class="icon-image" wx:elif="{{activeList === 'bullet'}}" src="/images/icons/list-bullet.svg" mode="aspectFit"></image>
+        <image class="icon-image" wx:else src="/images/icons/list-bullet.svg" mode="aspectFit" style="opacity: 0.4;"></image>
       </view>
-      <view class="toolbar-item {{formats.list === 'bullet' ? 'active' : ''}}" bindtap="format" data-name="list" data-value="bullet">
-        <image class="icon-image" src="/images/icons/list-bullet.svg" mode="aspectFit"></image>
-      </view>
-    </view>
     
-    <view class="toolbar-group">
       <!-- 背景色 -->
       <view class="toolbar-item color-picker" bindtap="showColorPicker">
         <image class="icon-image" src="/images/icons/color.svg" mode="aspectFit"></image>
       </view>
-    </view>
     
-    <view class="toolbar-group">
       <!-- 撤销 -->
       <view class="toolbar-item" bindtap="undo">
         <image class="icon-image" src="/images/icons/undo.svg" mode="aspectFit"></image>
@@ -105,7 +85,6 @@
       <view class="toolbar-item" bindtap="redo">
         <image class="icon-image" src="/images/icons/redo.svg" mode="aspectFit"></image>
       </view>
-    </view>
   </view>
   
 </view>

@@ -13,7 +13,10 @@ Page({
     colors: ['#ffffff', '#f8bbd0', '#e1f5fe', '#f1f8e9', '#fff8e1', '#efebe9'],
     wordCount: 0, // 内容字数统计
     canUndo: false, // 是否可以撤销
-    canRedo: false  // 是否可以重做
+    canRedo: false,  // 是否可以重做
+    activeAlign: 'left', // 当前激活的对齐方式
+    activeList: '', // 当前激活的列表类型
+    activeFontSize: 'normal' // 当前激活的字体大小
   },
 
   // 数据迁移：确保所有笔记都有有效ID
@@ -78,13 +81,6 @@ Page({
     });
   },
 
-  onUnload: function () {
-    // 页面卸载时清除定时器
-    if (this.data.autoSaveTimer) {
-      clearInterval(this.data.autoSaveTimer);
-    }
-  },
-
   // 编辑器初始化完成时触发
   onEditorReady: function () {
     const that = this;
@@ -98,12 +94,58 @@ Page({
         // 判断内容是否为HTML格式
         if (that.data.content.indexOf('<') !== -1 && that.data.content.indexOf('>') !== -1) {
           that.data.editorCtx.setContents({
-            html: that.data.content
+            html: that.data.content,
+            success: () => {
+              // 获取初始格式并设置激活状态
+              setTimeout(() => {
+                that.data.editorCtx.getFormat().then(res => {
+                  let activeAlign = 'left';
+                  let activeList = '';
+                  
+                  if (res.align) {
+                    activeAlign = res.align;
+                  }
+                  
+                  if (res.list) {
+                    activeList = res.list;
+                  }
+                  
+                  that.setData({
+                    formats: res,
+                    activeAlign: activeAlign,
+                    activeList: activeList
+                  });
+                });
+              }, 100);
+            }
           });
         } else {
           // 如果是纯文本，转换为HTML
           that.data.editorCtx.setContents({
-            html: that.data.content.split('\n').map(x => `<p>${x}</p>`).join()
+            html: that.data.content.split('\n').map(x => `<p>${x}</p>`).join(''),
+            success: () => {
+              // 获取初始格式并设置激活状态
+              setTimeout(() => {
+                that.data.editorCtx.getFormat().then(res => {
+                  let activeAlign = 'left';
+                  let activeList = '';
+                  
+                  if (res.align) {
+                    activeAlign = res.align;
+                  }
+                  
+                  if (res.list) {
+                    activeList = res.list;
+                  }
+                  
+                  that.setData({
+                    formats: res,
+                    activeAlign: activeAlign,
+                    activeList: activeList
+                  });
+                });
+              }, 100);
+            }
           });
         }
       }
@@ -133,11 +175,39 @@ Page({
     this.updateUndoRedoStatus();
   },
 
-  // 设置字体大小
+  // 切换字体大小
+  toggleFontSize: function () {
+    const sizes = ['small', 'normal', 'large'];
+    const currentIndex = sizes.indexOf(this.data.activeFontSize);
+    const nextIndex = (currentIndex + 1) % sizes.length;
+    const nextSize = sizes[nextIndex];
+    
+    this.setData({
+      activeFontSize: nextSize,
+      fontSize: nextSize
+    });
+
+    let fontSize;
+    switch (nextSize) {
+      case 'small':
+        fontSize = '14px';
+        break;
+      case 'large':
+        fontSize = '18px';
+        break;
+      default:
+        fontSize = '16px';
+    }
+
+    this.data.editorCtx.format('fontSize', fontSize);
+  },
+
+  // 设置字体大小 (保留原函数以兼容现有代码)
   setFontSize: function (e) {
     const size = e.currentTarget.dataset.size;
     this.setData({
-      fontSize: size
+      fontSize: size,
+      activeFontSize: size
     });
 
     let fontSize;
@@ -171,10 +241,73 @@ Page({
     });
   },
 
+  // 切换对齐方式
+  toggleAlign: function () {
+    const alignTypes = ['left', 'center', 'right'];
+    const currentIndex = alignTypes.indexOf(this.data.activeAlign);
+    const nextIndex = (currentIndex + 1) % alignTypes.length;
+    const nextAlign = alignTypes[nextIndex];
+    
+    this.setData({
+      activeAlign: nextAlign
+    });
+    
+    this.data.editorCtx.format('align', nextAlign);
+    
+    // 更新格式状态
+    setTimeout(() => {
+      this.data.editorCtx.getFormat().then(res => {
+        this.setData({
+          formats: res
+        });
+      });
+    }, 100);
+  },
+  
+  // 切换列表类型
+  toggleList: function () {
+    const listTypes = ['', 'ordered', 'bullet'];
+    const currentIndex = listTypes.indexOf(this.data.activeList);
+    const nextIndex = (currentIndex + 1) % listTypes.length;
+    const nextList = listTypes[nextIndex];
+    
+    this.setData({
+      activeList: nextList
+    });
+    
+    if (nextList === '') {
+      // 清除列表格式
+      this.data.editorCtx.removeFormat();
+      
+      // 恢复之前的对齐方式
+      setTimeout(() => {
+        this.data.editorCtx.format('align', this.data.activeAlign);
+      }, 100);
+    } else {
+      this.data.editorCtx.format('list', nextList);
+    }
+    
+    // 更新格式状态
+    setTimeout(() => {
+      this.data.editorCtx.getFormat().then(res => {
+        this.setData({
+          formats: res
+        });
+      });
+    }, 100);
+  },
+
   // 格式化功能
   format: function (e) {
     const { name, value } = e.currentTarget.dataset;
     if (!name) return;
+
+    // 更新对应的激活状态
+    if (name === 'align') {
+      this.setData({ activeAlign: value });
+    } else if (name === 'list') {
+      this.setData({ activeList: value });
+    }
 
     this.data.editorCtx.format(name, value);
 
@@ -273,12 +406,11 @@ Page({
   // 更新撤销/重做状态
   updateUndoRedoStatus: function () {
     if (!this.data.editorCtx) return;
-
-    this.data.editorCtx.canUndo().then(res => {
-      this.setData({ canUndo: res });
-    });
-    this.data.editorCtx.canRedo().then(res => {
-      this.setData({ canRedo: res });
+    Promise.all([
+      this.data.editorCtx.canUndo().catch(() => false),
+      this.data.editorCtx.canRedo().catch(() => false)
+    ]).then(([canUndo, canRedo]) => {
+      this.setData({ canUndo, canRedo });
     });
   },
 

@@ -66,18 +66,12 @@
   box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.2);
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content:flex-start;
   position: fixed;
   bottom: 0;
   left: 0;
   z-index: 100;
 }
-
-.toolbar-group {
-  display: flex;
-  margin: 5rpx 0;
-}
-
 .toolbar-item {
   min-width: 70rpx;
   height: 70rpx;
