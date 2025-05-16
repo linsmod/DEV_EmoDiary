@@ -17,7 +17,13 @@ Page({
     activeAlign: 'left', // 当前激活的对齐方式
     activeList: '', // 当前激活的列表类型
     activeFontSize: 'normal', // 当前激活的字体大小
-    res:''
+    res: '',
+    // 浮动按钮相关
+    buttonRight: 30, // 按钮初始位置
+    buttonBottom: 200,
+    startX: 0, // 触摸起始位置
+    startY: 0,
+    buttonMoving: false // 是否正在拖动
   },
 
   // 数据迁移：确保所有笔记都有有效ID
@@ -371,6 +377,42 @@ Page({
     // 简单去除HTML标签
     const text = html.replace(/<[^>]+>/g, '');
     return text.length;
+  },
+
+  // 浮动按钮触摸开始
+  onButtonTouchStart: function(e) {
+    this.setData({
+      startX: e.touches[0].clientX,
+      startY: e.touches[0].clientY,
+      buttonMoving: true
+    });
+  },
+
+  // 浮动按钮触摸移动
+  onButtonTouchMove: function(e) {
+    if (!this.data.buttonMoving) return;
+    
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    
+    // 计算移动距离
+    const deltaX = currentX - this.data.startX;
+    const deltaY = currentY - this.data.startY;
+    
+    // 更新按钮位置
+    this.setData({
+      buttonLeft: this.data.buttonLeft + deltaX,
+      buttonTop: this.data.buttonTop + deltaY,
+      startX: currentX,
+      startY: currentY
+    });
+  },
+
+  // 浮动按钮触摸结束
+  onButtonTouchEnd: function() {
+    this.setData({
+      buttonMoving: false
+    });
   },
 
   // 页面卸载时自动保存

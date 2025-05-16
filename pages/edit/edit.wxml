@@ -29,6 +29,20 @@
             bindinput="onContentInput"
             bindstatuschange="onStatusChange">
     </editor>
+
+    <!-- 浮动操作按钮 -->
+    <view class="float-buttons" style="right:{{buttonRight}}rpx; bottom:{{buttonBottom}}rpx;"
+          bindtouchstart="onButtonTouchStart"
+          bindtouchmove="onButtonTouchMove"
+          bindtouchend="onButtonTouchEnd">
+      <view class="drag-handle"></view>
+      <view class="float-button" bindtap="undo">
+        <image src="/images/icons/undo.svg" mode="aspectFit"></image>
+      </view>
+      <view class="float-button" bindtap="redo">
+        <image src="/images/icons/redo.svg" mode="aspectFit"></image>
+      </view>
+    </view>
   </view>
 
   <!-- 颜色选择器 -->
@@ -77,15 +91,6 @@
       <!-- 背景色 -->
       <view class="toolbar-item color-picker" bindtap="showColorPicker">
         <image class="icon-image" src="/images/icons/color.svg" mode="aspectFit"></image>
-      </view>
-    
-      <!-- 撤销 -->
-      <view class="toolbar-item" bindtap="undo">
-        <image class="icon-image" src="/images/icons/undo.svg" mode="aspectFit"></image>
-      </view>
-      <!-- 重做 -->
-      <view class="toolbar-item" bindtap="redo">
-        <image class="icon-image" src="/images/icons/redo.svg" mode="aspectFit"></image>
       </view>
   </view>
 </view>
