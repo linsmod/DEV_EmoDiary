@@ -31,7 +31,7 @@
     </editor>
 
     <!-- 浮动操作按钮 -->
-    <view class="float-buttons" style="right:{{buttonRight}}rpx; bottom:{{buttonBottom}}rpx;"
+    <view class="float-buttons" style="right:{{buttonRight}}px; bottom:{{buttonBottom}}px;"
           bindtouchstart="onButtonTouchStart"
           bindtouchmove="onButtonTouchMove"
           bindtouchend="onButtonTouchEnd">

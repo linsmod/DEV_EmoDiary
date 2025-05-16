@@ -23,7 +23,8 @@ Page({
     buttonBottom: 200,
     startX: 0, // 触摸起始位置
     startY: 0,
-    buttonMoving: false // 是否正在拖动
+    buttonMoving: false, // 是否正在拖动
+    debounceTimer: null
   },
 
   // 数据迁移：确保所有笔记都有有效ID
@@ -89,7 +90,7 @@ Page({
   },
 
   // 处理编辑器状态变化
-  onStatusChange: function(e) {
+  onStatusChange: function (e) {
     const formats = e.detail;
     this.setData({
       formats,
@@ -154,7 +155,7 @@ Page({
     const currentIndex = sizes.indexOf(this.data.activeFontSize);
     const nextIndex = (currentIndex + 1) % sizes.length;
     const nextSize = sizes[nextIndex];
-    
+
     this.setData({
       activeFontSize: nextSize,
       fontSize: nextSize
@@ -220,29 +221,29 @@ Page({
     const currentIndex = alignTypes.indexOf(this.data.activeAlign);
     const nextIndex = (currentIndex + 1) % alignTypes.length;
     const nextAlign = alignTypes[nextIndex];
-    
+
     this.setData({
       activeAlign: nextAlign
     });
-    
+
     this.data.editorCtx.format('align', nextAlign);
   },
-  
+
   // 切换列表类型
   toggleList: function () {
     const listTypes = ['', 'ordered', 'bullet'];
     const currentIndex = listTypes.indexOf(this.data.activeList);
     const nextIndex = (currentIndex + 1) % listTypes.length;
     const nextList = listTypes[nextIndex];
-    
+
     this.setData({
       activeList: nextList
     });
-    
+
     if (nextList === '') {
       // 清除列表格式
       this.data.editorCtx.removeFormat();
-      
+
       // 恢复之前的对齐方式
       setTimeout(() => {
         this.data.editorCtx.format('align', this.data.activeAlign);
@@ -380,36 +381,77 @@ Page({
   },
 
   // 浮动按钮触摸开始
-  onButtonTouchStart: function(e) {
+  onButtonTouchStart: function (e) {
+    if (this.data.debounceTimer) {
+      clearTimeout(this.data.debounceTimer);
+    }
     this.setData({
       startX: e.touches[0].clientX,
       startY: e.touches[0].clientY,
-      buttonMoving: true
+      buttonMoving: true,
+      debounceTimer: null
     });
   },
 
-  // 浮动按钮触摸移动
-  onButtonTouchMove: function(e) {
+  onButtonTouchMove: function (e) {
     if (!this.data.buttonMoving) return;
-    
+
+    const systemInfo = wx.getSystemInfoSync();
+    const windowWidth = systemInfo.windowWidth;  // 屏幕可用宽度（px）
+    const windowHeight = systemInfo.windowHeight; // 屏幕可用高度（px）
+
     const currentX = e.touches[0].clientX;
     const currentY = e.touches[0].clientY;
-    
-    // 计算移动距离
-    const deltaX = currentX - this.data.startX;
-    const deltaY = currentY - this.data.startY;
-    
-    // 更新按钮位置
+
+    // ===== 边界检测：如果触点接近屏幕边缘，停止拖动 =====
+    let adjustedX = currentX;
+    let adjustedY = currentY;
+
+    if (adjustedX < 25) {
+      adjustedX = 25;
+    }
+    if (adjustedX > windowWidth - 25) {
+      adjustedX = windowWidth - 25;
+    }
+    if (adjustedY < 25) {
+      adjustedY = 25;
+    }
+    if (adjustedY > windowHeight - 25) {
+      adjustedY = windowHeight - 25;
+    }
+
+    // ===== 计算偏移量 =====
+    const deltaX = adjustedX - this.data.startX;
+    const deltaY = adjustedY - this.data.startY;
+
+    // 清除之前的定时器
+    if (this.data.debounceTimer) {
+      clearTimeout(this.data.debounceTimer);
+    }
+
+    // 设置新的定时器，延迟更新位置（例如：50ms）
+    const timer = setTimeout(() => {
+      this.setData({
+        buttonRight: this.data.buttonRight - deltaX,
+        buttonBottom: this.data.buttonBottom - deltaY,
+        startX: adjustedX,
+        startY: adjustedY,
+        debounceTimer: null  // 清空定时器引用
+      });
+    }, 1); // 防抖时间间隔，可根据需要调整
+
+    // 更新定时器引用
     this.setData({
-      buttonLeft: this.data.buttonLeft + deltaX,
-      buttonTop: this.data.buttonTop + deltaY,
-      startX: currentX,
-      startY: currentY
+      debounceTimer: timer,
     });
   },
 
   // 浮动按钮触摸结束
-  onButtonTouchEnd: function() {
+  onButtonTouchEnd: function () {
+    if (this.data.debounceTimer) {
+      clearTimeout(this.data.debounceTimer);
+      this.setData({ debounceTimer: null });
+    }
     this.setData({
       buttonMoving: false
     });
