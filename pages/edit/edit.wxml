@@ -1,5 +1,6 @@
 <!--pages/edit/edit.wxml-->
 <view class="container">
+  <view class="note-footer">{{res}}</view>
   <!-- 标题输入和保存按钮 -->
   <view class="header-container">
     <view class="input-group title-group">
@@ -25,7 +26,8 @@
             show-img-resize
             adjust-position="{{false}}"
             bindready="onEditorReady"
-            bindinput="onContentInput">
+            bindinput="onContentInput"
+            bindstatuschange="onStatusChange">
     </editor>
   </view>
 
@@ -86,5 +88,4 @@
         <image class="icon-image" src="/images/icons/redo.svg" mode="aspectFit"></image>
       </view>
   </view>
-  
 </view>

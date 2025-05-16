@@ -16,7 +16,8 @@ Page({
     canRedo: false,  // 是否可以重做
     activeAlign: 'left', // 当前激活的对齐方式
     activeList: '', // 当前激活的列表类型
-    activeFontSize: 'normal' // 当前激活的字体大小
+    activeFontSize: 'normal', // 当前激活的字体大小
+    res:''
   },
 
   // 数据迁移：确保所有笔记都有有效ID
@@ -81,24 +82,14 @@ Page({
     });
   },
 
-  // 更新格式状态
-  updateFormats: function() {
-    if (!this.data.editorCtx) return;
-    
-    this.data.editorCtx.getContents({
-      success: (res) => {
-        if (res.delta) {
-          // 从delta中提取格式信息
-          const formats = {};
-          if (res.delta.ops && res.delta.ops.length > 0) {
-            const lastOp = res.delta.ops[res.delta.ops.length - 1];
-            if (lastOp.attributes) {
-              Object.assign(formats, lastOp.attributes);
-            }
-          }
-          this.setData({ formats });
-        }
-      }
+  // 处理编辑器状态变化
+  onStatusChange: function(e) {
+    const formats = e.detail;
+    this.setData({
+      formats,
+      activeAlign: formats.align || 'left',
+      activeList: formats.list || '',
+      activeFontSize: formats.size === '14px' ? 'small' : formats.size === '18px' ? 'large' : 'normal'
     });
   },
 
@@ -115,18 +106,13 @@ Page({
         // 判断内容是否为HTML格式
         if (that.data.content.indexOf('<') !== -1 && that.data.content.indexOf('>') !== -1) {
           that.data.editorCtx.setContents({
-            html: that.data.content,
-            success: () => {
-              that.updateFormats();
-            }
+            html: that.data.content
           });
         } else {
           // 如果是纯文本，转换为HTML
           that.data.editorCtx.setContents({
             html: that.data.content.split('\n').map(x => `<p>${x}</p>`).join(''),
-            success: () => {
-              that.updateFormats();
-            }
+
           });
         }
       }
@@ -181,11 +167,6 @@ Page({
     }
 
     this.data.editorCtx.format('fontSize', fontSize);
-    
-    // 更新格式状态
-    setTimeout(() => {
-      this.updateFormats();
-    }, 100);
   },
 
   // 设置字体大小 (保留原函数以兼容现有代码)
@@ -239,11 +220,6 @@ Page({
     });
     
     this.data.editorCtx.format('align', nextAlign);
-    
-    // 更新格式状态
-    setTimeout(() => {
-      this.updateFormats();
-    }, 100);
   },
   
   // 切换列表类型
@@ -268,11 +244,6 @@ Page({
     } else {
       this.data.editorCtx.format('list', nextList);
     }
-    
-    // 更新格式状态
-    setTimeout(() => {
-      this.updateFormats();
-    }, 100);
   },
 
   // 格式化功能
@@ -288,11 +259,6 @@ Page({
     }
 
     this.data.editorCtx.format(name, value);
-
-    // 更新格式状态
-    setTimeout(() => {
-      this.updateFormats();
-    }, 100);
   },
 
   // 自动保存
