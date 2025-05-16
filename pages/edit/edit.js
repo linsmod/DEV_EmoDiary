@@ -81,6 +81,27 @@ Page({
     });
   },
 
+  // 更新格式状态
+  updateFormats: function() {
+    if (!this.data.editorCtx) return;
+    
+    this.data.editorCtx.getContents({
+      success: (res) => {
+        if (res.delta) {
+          // 从delta中提取格式信息
+          const formats = {};
+          if (res.delta.ops && res.delta.ops.length > 0) {
+            const lastOp = res.delta.ops[res.delta.ops.length - 1];
+            if (lastOp.attributes) {
+              Object.assign(formats, lastOp.attributes);
+            }
+          }
+          this.setData({ formats });
+        }
+      }
+    });
+  },
+
   // 编辑器初始化完成时触发
   onEditorReady: function () {
     const that = this;
@@ -96,27 +117,7 @@ Page({
           that.data.editorCtx.setContents({
             html: that.data.content,
             success: () => {
-              // 获取初始格式并设置激活状态
-              setTimeout(() => {
-                that.data.editorCtx.getFormat().then(res => {
-                  let activeAlign = 'left';
-                  let activeList = '';
-                  
-                  if (res.align) {
-                    activeAlign = res.align;
-                  }
-                  
-                  if (res.list) {
-                    activeList = res.list;
-                  }
-                  
-                  that.setData({
-                    formats: res,
-                    activeAlign: activeAlign,
-                    activeList: activeList
-                  });
-                });
-              }, 100);
+              that.updateFormats();
             }
           });
         } else {
@@ -124,27 +125,7 @@ Page({
           that.data.editorCtx.setContents({
             html: that.data.content.split('\n').map(x => `<p>${x}</p>`).join(''),
             success: () => {
-              // 获取初始格式并设置激活状态
-              setTimeout(() => {
-                that.data.editorCtx.getFormat().then(res => {
-                  let activeAlign = 'left';
-                  let activeList = '';
-                  
-                  if (res.align) {
-                    activeAlign = res.align;
-                  }
-                  
-                  if (res.list) {
-                    activeList = res.list;
-                  }
-                  
-                  that.setData({
-                    formats: res,
-                    activeAlign: activeAlign,
-                    activeList: activeList
-                  });
-                });
-              }, 100);
+              that.updateFormats();
             }
           });
         }
@@ -200,6 +181,11 @@ Page({
     }
 
     this.data.editorCtx.format('fontSize', fontSize);
+    
+    // 更新格式状态
+    setTimeout(() => {
+      this.updateFormats();
+    }, 100);
   },
 
   // 设置字体大小 (保留原函数以兼容现有代码)
@@ -256,11 +242,7 @@ Page({
     
     // 更新格式状态
     setTimeout(() => {
-      this.data.editorCtx.getFormat().then(res => {
-        this.setData({
-          formats: res
-        });
-      });
+      this.updateFormats();
     }, 100);
   },
   
@@ -289,11 +271,7 @@ Page({
     
     // 更新格式状态
     setTimeout(() => {
-      this.data.editorCtx.getFormat().then(res => {
-        this.setData({
-          formats: res
-        });
-      });
+      this.updateFormats();
     }, 100);
   },
 
@@ -313,11 +291,7 @@ Page({
 
     // 更新格式状态
     setTimeout(() => {
-      this.data.editorCtx.getFormat().then(res => {
-        this.setData({
-          formats: res
-        });
-      });
+      this.updateFormats();
     }, 100);
   },
 
@@ -405,29 +379,24 @@ Page({
 
   // 更新撤销/重做状态
   updateUndoRedoStatus: function () {
-    if (!this.data.editorCtx) return;
-    Promise.all([
-      this.data.editorCtx.canUndo().catch(() => false),
-      this.data.editorCtx.canRedo().catch(() => false)
-    ]).then(([canUndo, canRedo]) => {
-      this.setData({ canUndo, canRedo });
+    // 由于微信小程序编辑器本身支持撤销/重做功能
+    // 但不提供检查状态的API，我们直接启用这些功能
+    this.setData({
+      canUndo: true,
+      canRedo: true
     });
   },
 
   // 撤销操作
   undo: function () {
     if (!this.data.editorCtx) return;
-
     this.data.editorCtx.undo();
-    this.updateUndoRedoStatus();
   },
 
   // 重做操作
   redo: function () {
     if (!this.data.editorCtx) return;
-
     this.data.editorCtx.redo();
-    this.updateUndoRedoStatus();
   },
 
   // 计算纯文本长度（去除HTML标签）
