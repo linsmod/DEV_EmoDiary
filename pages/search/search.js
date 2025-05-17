@@ -238,10 +238,15 @@ Page({
   clearSearch() {
     this.setData({
       keyword: '',
-      clearBtnVisible: false,
       results: [],
       showRecent: true
     });
+    // 确保输入框失去焦点，避免键盘闪烁
+    setTimeout(() => {
+      this.setData({
+        clearBtnVisible: false
+      });
+    }, 100);
   },
 
   onSearch(e) {

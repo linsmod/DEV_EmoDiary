@@ -93,23 +93,26 @@
   right: 20rpx;
   top: 50%;
   transform: translateY(-50%);
-  width: 40rpx;
-  height: 40rpx;
+  width: 50rpx; /* 增大点击区域 */
+  height: 50rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0.6;
   background: rgba(0,0,0,0.1);
   border-radius: 50%;
+  z-index: 10; /* 确保在最上层 */
 }
 
 .clear-btn:active {
   opacity: 1;
+  background: rgba(0,0,0,0.2);
 }
 
 .clear-btn image {
   width: 24rpx;
   height: 24rpx;
+  pointer-events: none; /* 防止图片拦截点击 */
 }
 
 /* 调整主按钮宽度 */
