@@ -79,8 +79,8 @@
   justify-content: center;
   align-items: center;
   /* padding: 0 5rpx; */
-  margin: 0 8rpx;
-  border-radius: 8rpx;
+  margin: 8rpx;
+  border-radius: 15%;
   background-color: #f0f0f0;
 }
 
@@ -127,15 +127,16 @@
   width: 100%;
   background-color: white;
   border-radius: 10rpx;
-  border-top: 0.5px solid #ffbefc;
-  /* box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2); */
+  border-top: 0.5px solid #fff3be;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
   position: fixed;
-  bottom: 100rpx;
+  padding-bottom: 125rpx;
+  bottom: 0rpx;
   left: 0;
-  z-index: 110;
+  z-index: 90;
 }
 
 .color-item {

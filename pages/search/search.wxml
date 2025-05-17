@@ -1,17 +1,23 @@
 <!-- 主容器 -->
 <view class="container">
   <!-- 固定搜索栏 -->
-  <view class="search-bar">
-    <input 
-      placeholder="搜索笔记" 
-      bindinput="onInput" 
-      bindconfirm="onSearch"
-      confirm-type="search"
-      auto-focus
-      focus="{{true}}"
-      value="{{keyword}}"
-    />
-    <button class="primary-btn" bindtap="onSearch" style="margin-left: 20rpx;">搜索</button>
+  <view class="search-container">
+    <view class="search-bar">
+      <image class="search-icon" src="/images/search.svg" mode="aspectFit"></image>
+      <input 
+        placeholder="搜索笔记" 
+        bindinput="onInput" 
+        bindconfirm="onSearch"
+        confirm-type="search"
+        auto-focus
+        focus="{{true}}"
+        value="{{keyword}}"
+      />
+      <view class="clear-btn" wx:if="{{keyword}}" bindtap="clearSearch">
+        <image src="/images/close.svg" mode="aspectFit"></image>
+      </view>
+    </view>
+    <button class="primary-btn modified" bindtap="onSearch">搜索</button>
   </view>
 
   <!-- 内容区域 -->

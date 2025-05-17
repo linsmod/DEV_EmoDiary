@@ -49,26 +49,74 @@
   color: #e74c3c;
 }
 
-/* 搜索栏样式 */
-.search-bar {
+/* 搜索容器 */
+.search-container {
   display: flex;
   padding: 20rpx;
-  background: #f5f5f5;
+  background: #fff;
   align-items: center;
 }
 
-.search-bar input {
+/* 搜索栏样式 */
+.search-bar {
   flex: 1;
-  background: #fff;
+  min-width: 0; /* 允许缩小 */
+  position: relative;
+  background: #f5f5f5;
+  border-radius: 40rpx;
   padding: 16rpx 20rpx;
-  border-radius: 8rpx;
-  margin-right: 20rpx;
+  margin-right: 10rpx; /* 减少与按钮间距 */
 }
 
-.search-bar button {
-  width: 140rpx;
-  flex: none;
-  white-space: nowrap;
+.search-bar input {
+  width: 100%;
+  height: 60rpx;
+  padding: 0 80rpx 0 60rpx;
+  background: transparent;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 搜索图标 */
+.search-icon {
+  position: absolute;
+  left: 40rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32rpx;
+  height: 32rpx;
+}
+
+/* 清空按钮 */
+.clear-btn {
+  position: absolute;
+  right: 20rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  background: rgba(0,0,0,0.1);
+  border-radius: 50%;
+}
+
+.clear-btn:active {
+  opacity: 1;
+}
+
+.clear-btn image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+/* 调整主按钮宽度 */
+.primary-btn.modified {
+  width: 140rpx; 
+  min-width: 140rpx; /* 防止被压缩 */
+  flex-shrink: 0; /* 禁止缩小 */
 }
 
 /* 内容区域样式 */
@@ -104,6 +152,10 @@
   align-items: center;
   justify-content: center;
   padding: 80rpx 0;
+  background: #fff;
+  border-radius: 12rpx;
+  margin: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
 }
 
 .empty image {
@@ -115,6 +167,23 @@
 .empty text {
   font-size: 28rpx;
   color: #999;
+}
+
+/* 页尾提示样式 */
+.loading,
+.no-more {
+  text-align: center;
+  padding: 30rpx;
+  font-size: 28rpx;
+  color: #999;
+  background: #fff;
+  border-radius: 12rpx;
+  margin: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.loading {
+  color: #07C160;
 }
 
 /* 高亮文本样式 */
