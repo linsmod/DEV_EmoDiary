@@ -41,6 +41,14 @@ Page({
       }, 500);
     }
   },
+  
+  // 页面显示时刷新数据
+  onShow: function () {
+    // 如果已经加载过数据（id存在），则刷新数据
+    if (this.data.id) {
+      this.loadNoteDetail();
+    }
+  },
 
   loadNoteDetail: function () {
     const notes = wx.getStorageSync('notes') || [];

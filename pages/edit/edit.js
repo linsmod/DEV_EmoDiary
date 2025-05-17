@@ -389,15 +389,15 @@ Page({
     wx.setStorageSync('notes', notes);
 
     if (!isAutoSave) {
-      wx.showToast({
-        title: '保存成功',
-        icon: 'success'
-      });
+      // wx.showToast({
+      //   title: '保存成功',
+      //   icon: 'success'
+      // });
 
       // 返回上一页
       setTimeout(() => {
         wx.navigateBack();
-      }, 1000);
+      }, 0);
     } else {
       console.log('自动保存成功');
     }
