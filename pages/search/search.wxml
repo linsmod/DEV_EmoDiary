@@ -24,14 +24,31 @@
   <view class="content-area">
     <!-- 最近搜索 - 紧凑模式 -->
     <view class="recent-searches" wx:if="{{showRecent && recentSearches.length}}">
-      <view class="recent-title">最近搜索</view>
-      <view class="tags-container">
-        <view wx:for="{{recentSearches}}" wx:key="time" class="search-tag">
-          <text bindtap="onSearch" data-keyword="{{item.keyword}}">{{item.keyword}}</text>
-          <image src="/images/close.svg" bindtap="removeSearchKeyword" data-index="{{index}}" class="tag-delete"></image>
+      <view class="recent-header">
+        <view class="recent-title">最近搜索</view>
+        <view class="delete-btn" bindtap="toggleManageMode" wx:if="{{!isManageMode}}">
+          <image src="/images/delete.svg" mode="aspectFit"></image>
         </view>
       </view>
-      <view class="clear-all" bindtap="clearRecentSearches">清空搜索历史</view>
+      
+      <view class="tags-container">
+        <view wx:for="{{recentSearches}}" wx:key="time" class="search-tag">
+          <text bindtap="{{isManageMode ? '' : 'onSearch'}}" data-keyword="{{item.keyword}}">{{item.keyword}}</text>
+          <image 
+            wx:if="{{isManageMode}}"
+            src="/images/close.svg" 
+            bindtap="removeSearchKeyword" 
+            data-index="{{index}}" 
+            class="tag-delete"
+          ></image>
+        </view>
+      </view>
+      
+      <view class="manage-actions" wx:if="{{isManageMode}}">
+        <view class="action-btn danger" bindtap="clearRecentSearches">清空</view>
+        <view class="action-btn" bindtap="finishManage">完成</view>
+      </view>
+      <view class="clear-all" bindtap="toggleManageMode" wx:if="{{!isManageMode}}">管理</view>
     </view>
 
     <!-- 搜索结果列表 -->

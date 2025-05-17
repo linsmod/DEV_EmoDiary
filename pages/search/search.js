@@ -171,7 +171,8 @@ Page({
     pageSize: 10,
     currentPage: 0,
     recentSearches: [],
-    showRecent: true
+    showRecent: true,
+    isManageMode: false // 新增管理模式状态
   },
 
   onLoad() {
@@ -364,12 +365,51 @@ searchNotes() {
     });
   },
 
+  // 切换管理模式
+  toggleManageMode() {
+    this.setData({
+      isManageMode: !this.data.isManageMode
+    });
+  },
+
+  // 完成管理
+  finishManage() {
+    this.setData({
+      isManageMode: false
+    });
+  },
+
   // 清空所有搜索记录
   clearRecentSearches() {
-    wx.setStorageSync('recentSearches', []);
-    this.setData({ recentSearches: [] });
+    wx.showModal({
+      title: '提示',
+      content: '确定要清空所有搜索记录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.setStorageSync('recentSearches', []);
+          this.setData({ 
+            recentSearches: [],
+            isManageMode: false
+          });
+          wx.showToast({
+            title: '已清空记录',
+            icon: 'none',
+            duration: 1000
+          });
+        }
+      }
+    });
+  },
+
+  // 删除单个搜索记录
+  removeSearchKeyword(e) {
+    const { index } = e.currentTarget.dataset;
+    let searches = [...this.data.recentSearches];
+    searches.splice(index, 1);
+    wx.setStorageSync('recentSearches', searches);
+    this.setData({ recentSearches: searches });
     wx.showToast({
-      title: '已清空记录',
+      title: '已删除',
       icon: 'none',
       duration: 1000
     });
