@@ -1,7 +1,7 @@
 <!--pages/edit/edit.wxml-->
 <view class="container">
   <!-- 笔记详情区域 -->
-  <view class="note-detail">
+  <view class="note-detail" style="margin-top: {{-editorMarginTop}}px">
     <!-- 标题输入 -->
     <view class="title-group">
       <input class="note-title title-input" placeholder="请输入标题" value="{{title}}" bindinput="onTitleInput" bindfocus="onTitleFocus" bindblur="onTitleBlur" maxlength="100" />
@@ -10,6 +10,9 @@
     <!-- 时间显示和字数统计 -->
     <view class="note-time">
       最后更新 {{updateTimeStr}} · 字数: {{wordCount || 0}}
+      <!-- <view class="debug">
+      · KBH: {{keyboardHeight}} - st: {{scrollTop}}
+      </view> -->
     </view>
     
     <!-- 内容输入 -->

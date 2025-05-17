@@ -13,7 +13,7 @@ Page({
     colors: ['#ffffff', '#f8bbd0', '#e1f5fe', '#f1f8e9', '#fff8e1', '#efebe9'],
     wordCount: 0, // 内容字数统计
     canUndo: false, // 是否可以撤销
-    canRedo: false,  // 是否可以重做
+    canRedo: false, // 是否可以重做
     activeAlign: 'left', // 当前激活的对齐方式
     activeList: '', // 当前激活的列表类型
     activeFontSize: 'normal', // 当前激活的字体大小
@@ -29,7 +29,10 @@ Page({
     further: [], // for title only
     readonly: false,
     historyTargetTitle: false, // 标题是否获得焦点
-    changes: 0
+    changes: 0,
+    scrollTop: 0, // 页面滚动位置
+    keyboardHeight: 0, // 键盘高度
+    editorMarginTop: 0 // 编辑器底部padding
   },
 
   // 数据迁移：确保所有笔记都有有效ID
@@ -59,6 +62,17 @@ Page({
   },
 
   onLoad: function (options) {
+    // 监听键盘高度变化
+    wx.onKeyboardHeightChange(res => {
+      const keyboardHeight = res.height;
+      const toolbarHeight = 80;
+      setTimeout(() => {
+        this.setData({
+          editorMarginTop: keyboardHeight > 0 ? toolbarHeight : 0
+        });
+      }, 150); // ensure margin adjusing is after layout completed.
+    });
+
     // 先执行数据迁移
     const notes = this.migrateNotes();
 
@@ -137,7 +151,10 @@ Page({
           wordCount: that.getTextLength(that.data.content)
         });
       }
-      that.setData({ history: [], historyIndex: -1 })
+      that.setData({
+        history: [],
+        historyIndex: -1
+      })
     }).exec();
   },
 
@@ -195,7 +212,7 @@ Page({
       wordCount: this.getTextLength(e.detail.html || '')
     });
     // No need record the content because we use editorContext to perform redo/undo
-    
+
     this.data.changes++;
   },
 
@@ -482,7 +499,7 @@ Page({
     if (!this.data.buttonMoving) return;
 
     const systemInfo = wx.getSystemInfoSync();
-    const windowWidth = systemInfo.windowWidth;  // 屏幕可用宽度（px）
+    const windowWidth = systemInfo.windowWidth; // 屏幕可用宽度（px）
     const windowHeight = systemInfo.windowHeight; // 屏幕可用高度（px）
 
     const currentX = e.touches[0].clientX;
@@ -521,7 +538,7 @@ Page({
         buttonBottom: this.data.buttonBottom - deltaY,
         startX: adjustedX,
         startY: adjustedY,
-        debounceTimer: null  // 清空定时器引用
+        debounceTimer: null // 清空定时器引用
       });
     }, 1); // 防抖时间间隔，可根据需要调整
 
@@ -535,10 +552,21 @@ Page({
   onButtonTouchEnd: function () {
     if (this.data.debounceTimer) {
       clearTimeout(this.data.debounceTimer);
-      this.setData({ debounceTimer: null });
+      this.setData({
+        debounceTimer: null
+      });
     }
     this.setData({
       buttonMoving: false
+    });
+  },
+
+  // 记录页面滚动位置
+  onPageScroll: function (e) {
+    if (this.data.keyboardHeight > 0)
+      return;
+    this.setData({
+      scrollTop: parseInt(e.scrollTop)
     });
   },
 

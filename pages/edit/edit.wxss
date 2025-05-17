@@ -4,6 +4,7 @@
   background-color: #f8f8f8;
   min-height: 100vh;
   box-sizing: border-box;
+
 }
 
 .note-detail {
@@ -13,6 +14,7 @@
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
   margin-bottom: 30rpx;
   position: relative;
+  transition: margin-top 0.5s ease;
 }
 
 .note-title {
@@ -57,29 +59,29 @@
 /* 工具栏样式 */
 .toolbar {
   width: 100%;
-  background-color: #f8f8f8;
-  border-radius: 10rpx 10rpx 0 0;
-  padding: 10rpx;
+  background-color: white;
+  /* border-radius: 10rpx 10rpx 0 0; */
+  padding: 10rpx 20rpx 25rpx 20rpx;
   box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.2);
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
   position: fixed;
-  bottom: 25rpx;
+  bottom: 0;
   left: 0;
   z-index: 100;
 }
 
 .toolbar-item {
-  min-width: 70rpx;
-  height: 70rpx;
+  width: 90rpx;
+  height: 80rpx;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 10rpx;
-  margin: 0 5rpx;
+  /* padding: 0 5rpx; */
+  margin: 0 8rpx;
   border-radius: 8rpx;
-  background-color: white;
+  background-color: #f0f0f0;
 }
 
 .icon-text {
@@ -116,14 +118,8 @@
 }
 
 .toolbar-item.active {
-  /* background-color: #3498db; */
-  /* color: white; */
+  color: #3498db;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
-}
-
-.color-picker {
-  font-size: 24rpx;
-  padding: 0 15rpx;
 }
 
 /* 颜色选择器面板 */
@@ -131,14 +127,13 @@
   width: 100%;
   background-color: white;
   border-radius: 10rpx;
-  padding: 15rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
+  border-top: 0.5px solid #ffbefc;
+  /* box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2); */
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-evenly;
   position: fixed;
-  bottom: 120rpx;
+  bottom: 100rpx;
   left: 0;
   z-index: 110;
 }
@@ -146,9 +141,9 @@
 .color-item {
   width: 60rpx;
   height: 60rpx;
-  border-radius: 50%;
-  margin: 10rpx;
-  border: 1rpx solid #ddd;
+  border-radius: 20%;
+  margin: 25rpx 0;
+  border: 1rpx solid #bfbfbf;
 }
 
 .content-editor {
