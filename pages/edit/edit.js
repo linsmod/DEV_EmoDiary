@@ -21,7 +21,7 @@ Page({
     activeAlign: 'left', // 当前激活的对齐方式
     activeList: '', // 当前激活的列表类型
     activeFontSize: 'normal', // 当前激活的字体大小
-    res: '',
+    formatsJSON: '',
     // 浮动按钮相关
     buttonRight: 30, // 按钮初始位置
     buttonBottom: 200,
@@ -129,7 +129,7 @@ Page({
     const formats = e.detail;
     this.setData({
       formats,
-      res: JSON.stringify(formats),
+      formatsJSON: JSON.stringify(formats),
       activeAlign: formats.align || 'left',
       activeList: formats.list || '',
       activeFontSize: formats.size === '14px' ? 'small' : formats.size === '18px' ? 'large' : 'normal',
@@ -328,7 +328,7 @@ Page({
       readonly: false
     })
     func();
-    this.data.editorCtx.blur()
+    this.data.editorCtx.focus()
     this.setData({
       readonly: rd
     });
