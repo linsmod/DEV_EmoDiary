@@ -24,7 +24,11 @@ Page({
     startX: 0, // 触摸起始位置
     startY: 0,
     buttonMoving: false, // 是否正在拖动
-    debounceTimer: null
+    debounceTimer: null,
+    history: [],
+    historyIndex: 0,
+    supressEvents: 0,
+    readonly: true
   },
 
   // 数据迁移：确保所有笔记都有有效ID
@@ -94,9 +98,13 @@ Page({
     const formats = e.detail;
     this.setData({
       formats,
+      res: JSON.stringify(formats),
       activeAlign: formats.align || 'left',
       activeList: formats.list || '',
-      activeFontSize: formats.size === '14px' ? 'small' : formats.size === '18px' ? 'large' : 'normal'
+      activeFontSize: formats.size === '14px' ? 'small' : formats.size === '18px' ? 'large' : 'normal',
+      activeBold: formats.bold || '',
+      activeItalic: formats.italic || '',
+      activeUnderline: formats.underline || '',
     });
   },
 
@@ -119,10 +127,10 @@ Page({
           // 如果是纯文本，转换为HTML
           that.data.editorCtx.setContents({
             html: that.data.content.split('\n').map(x => `<p>${x}</p>`).join(''),
-
           });
         }
       }
+      that.setData({ history: [], historyIndex: -1 })
     }).exec();
   },
 
@@ -135,23 +143,32 @@ Page({
       updateTime: now.getTime(),
       updateTimeStr: `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
     });
+    this.createNewHistoryItem('修改标题', this.data.title, e.detail.value);
+    this.updateUndoRedoStatus();
   },
+  onEditorFocus: function (e) {
 
+  },
   // 内容输入事件
   onContentInput: function (e) {
+    if (this.data.supressEvents > 0) {
+      this.data.supressEvents--;
+      return;
+    }
     // 编辑器的输入事件会返回HTML内容
     this.setData({
       content: e.detail.html || '',
       wordCount: this.getTextLength(e.detail.html || '')
     });
-
+    // No need record the content because we use editorContext to perform redo/undo
+    this.createNewHistoryItem('编辑内容', this.data.content, e);
     // 更新撤销/重做状态
     this.updateUndoRedoStatus();
   },
 
   // 切换字体大小
   toggleFontSize: function () {
-    const sizes = ['small', 'normal', 'large'];
+    const sizes = ['small', 'normal', 'large', 'xlarge', 'xxlarge', 'xxxlarge'];
     const currentIndex = sizes.indexOf(this.data.activeFontSize);
     const nextIndex = (currentIndex + 1) % sizes.length;
     const nextSize = sizes[nextIndex];
@@ -169,34 +186,25 @@ Page({
       case 'large':
         fontSize = '18px';
         break;
+      case 'xlarge':
+        fontSize = '20px';
+        break;
+      case 'xxlarge':
+        fontSize = '22px';
+        break;
+      case 'xxxlarge':
+        fontSize = '24px';
+        break;
+      case 'normal':
       default:
         fontSize = '16px';
     }
 
-    this.data.editorCtx.format('fontSize', fontSize);
-  },
-
-  // 设置字体大小 (保留原函数以兼容现有代码)
-  setFontSize: function (e) {
-    const size = e.currentTarget.dataset.size;
-    this.setData({
-      fontSize: size,
-      activeFontSize: size
-    });
-
-    let fontSize;
-    switch (size) {
-      case 'small':
-        fontSize = '14px';
-        break;
-      case 'large':
-        fontSize = '18px';
-        break;
-      default:
-        fontSize = '16px';
-    }
-
-    this.data.editorCtx.format('fontSize', fontSize);
+    this.runAction(() => {
+      this.data.editorCtx.format('fontSize', fontSize);
+    })
+    this.createNewHistoryItem('修改字号');
+    this.updateUndoRedoStatus();
   },
 
   // 显示颜色选择器
@@ -209,15 +217,20 @@ Page({
   // 设置背景色
   setBackgroundColor: function (e) {
     const color = e.currentTarget.dataset.color;
-    this.data.editorCtx.format('backgroundColor', color);
+
     this.setData({
       showColorPicker: false
     });
+    this.runAction(() => {
+      this.data.editorCtx.format('backgroundColor', color);
+    })
+    this.createNewHistoryItemForSelection('修改文本背景色');
+    this.updateUndoRedoStatus();
   },
 
   // 切换对齐方式
   toggleAlign: function () {
-    const alignTypes = ['left', 'center', 'right'];
+    const alignTypes = ['left', 'center', 'right', 'justify'];
     const currentIndex = alignTypes.indexOf(this.data.activeAlign);
     const nextIndex = (currentIndex + 1) % alignTypes.length;
     const nextAlign = alignTypes[nextIndex];
@@ -225,13 +238,17 @@ Page({
     this.setData({
       activeAlign: nextAlign
     });
-
-    this.data.editorCtx.format('align', nextAlign);
+    this.runAction(() => {
+      this.data.editorCtx.format('align', nextAlign);
+    })
+    this.createNewHistoryItemForSelection('修改文本对齐');
+    this.updateUndoRedoStatus();
   },
 
   // 切换列表类型
   toggleList: function () {
-    const listTypes = ['', 'ordered', 'bullet'];
+
+    const listTypes = ['', 'ordered', 'bullet', 'check'];
     const currentIndex = listTypes.indexOf(this.data.activeList);
     const nextIndex = (currentIndex + 1) % listTypes.length;
     const nextList = listTypes[nextIndex];
@@ -239,33 +256,39 @@ Page({
     this.setData({
       activeList: nextList
     });
-
-    if (nextList === '') {
-      // 清除列表格式
-      this.data.editorCtx.removeFormat();
-
-      // 恢复之前的对齐方式
-      setTimeout(() => {
-        this.data.editorCtx.format('align', this.data.activeAlign);
-      }, 100);
-    } else {
+    this.runAction(() => {
       this.data.editorCtx.format('list', nextList);
-    }
+    })
+
+    this.createNewHistoryItem('修改列表样式');
+    this.updateUndoRedoStatus();
   },
 
+  runAction: function (func) {
+    const rd = this.data.readonly;
+    this.setData({
+      readonly: false
+    })
+    func();
+    this.data.editorCtx.blur()
+    this.setData({
+      readonly: rd
+    });
+  },
   // 格式化功能
-  format: function (e) {
-    const { name, value } = e.currentTarget.dataset;
-    if (!name) return;
-
-    // 更新对应的激活状态
-    if (name === 'align') {
-      this.setData({ activeAlign: value });
-    } else if (name === 'list') {
-      this.setData({ activeList: value });
-    }
-
-    this.data.editorCtx.format(name, value);
+  toggleBold: function (e) {
+    this.runAction(() => {
+      this.data.editorCtx.format('bold', this.data.activeBold == 'strong' ? '' : 'strong');
+    })
+    this.createNewHistoryItemForSelection('修改粗体');
+    this.updateUndoRedoStatus();
+  },
+  toggleItalic: function (e) {
+    this.runAction(() => {
+      this.data.editorCtx.format('italic', this.data.activeItalic == 'em' ? '' : 'em');
+    })
+    this.createNewHistoryItemForSelection('修改斜体');
+    this.updateUndoRedoStatus();
   },
 
   // 自动保存
@@ -350,27 +373,77 @@ Page({
     this.saveNote();
   },
 
-  // 更新撤销/重做状态
-  updateUndoRedoStatus: function () {
-    // 由于微信小程序编辑器本身支持撤销/重做功能
-    // 但不提供检查状态的API，我们直接启用这些功能
-    this.setData({
-      canUndo: true,
-      canRedo: true
+  createNewHistoryItemForSelection(op, before, after) {
+    return;
+    const that = this;
+    this.data.editorCtx.getSelectionText({
+      success: (res) => {
+        if (!res.text) {
+          return;
+        }
+        that.createNewHistoryItem(op, before, after);
+      }
     });
   },
-
-  // 撤销操作
+  createNewHistoryItem(op, before, after) {
+    const h = this.data.history.splice(0, this.data.historyIndex + 1)
+    h.push({ 'op': op, oldValue: before, newValue: after, 'time': Date.now() });
+    this.setData({ history: h, historyIndex: h.length - 1, historyText: JSON.stringify(h.map(x => x.op)) });
+    console.log('do', JSON.stringify(op), h[this.data.historyIndex])
+  },
+  // 更新撤销/重做状态
+  updateUndoRedoStatus: function () {
+    this.setData({
+      canUndo: this.data.history.length > 0,
+      canRedo: this.data.history.length > 0 && this.data.historyIndex < this.data.history.length - 1
+    });
+  },
   undo: function () {
     if (!this.data.editorCtx) return;
-    this.data.editorCtx.undo();
-  },
+    this.data.editorCtx.bindToWindow = function (ui) {
+      ui.window = parent
+    }.bind(this.data.editorCtx);
+    this.data.editorCtx.bindToWindow(this);
 
-  // 重做操作
+    this.window[0].alert("HELLO WORLD")
+    this.data.editorCtx._execCommand('function() testDump{return location.href};testDump', {
+      needCallBack: 1,
+      complete: function (e) {
+        console.log(e)
+      }
+    })
+    this.data.editorCtx.undo()
+  },
   redo: function () {
     if (!this.data.editorCtx) return;
-    this.data.editorCtx.redo();
+    this.data.editorCtx.redo()
   },
+  // 撤销操作
+  // undo: function () {
+  //   if (!this.data.editorCtx) return;
+  //   const postUndoPos = this.data.historyIndex - 1;
+  //   if (postUndoPos >= -1 && postUndoPos <= this.data.history.length - 1) {
+  //     console.log('undo', this.data.history[this.data.historyIndex].op, this.data.history[this.data.historyIndex])
+  //     this.data.supressEvents ++;
+  //     const that = this;
+  //     this.data.editorCtx.undo()
+  //     this.setData({
+  //       historyIndex: postUndoPos
+  //     });
+  //   }
+  // },
+
+  // 重做操作
+  // redo: function () {
+  //   if (!this.data.editorCtx) return;
+  //   const postRedoPos = this.data.historyIndex + 1;
+  //   if (postRedoPos >= 0 && postRedoPos <= this.data.history.length - 1) {
+  //     this.data.editorCtx.redo();
+  //     this.setData({
+  //       historyIndex: postRedoPos
+  //     });
+  //   }
+  // },
 
   // 计算纯文本长度（去除HTML标签）
   getTextLength: function (html) {

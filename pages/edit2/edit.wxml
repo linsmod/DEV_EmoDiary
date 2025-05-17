@@ -1,0 +1,8 @@
+<custom-editor initial-content="<p>Initial Content</p>"></custom-editor>
+<button bindtap="getContents">Get Contents</button>
+<button bindtap="setContents">Set Contents</button>
+<button bindtap="insertText">Insert Text</button>
+<button bindtap="insertImage">Insert Image</button>
+<button bindtap="clear">Clear</button>
+<button bindtap="undo">Undo</button>
+<button bindtap="redo">Redo</button>

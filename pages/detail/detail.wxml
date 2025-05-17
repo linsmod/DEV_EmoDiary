@@ -30,7 +30,7 @@
         </view>
       </block> -->
       <block>
-        <rich-text nodes="{{note.content || '<p>暂无内容</p>'}}" space="nbsp"></rich-text>
+        <rich-text user-select="true" nodes="{{note.content || '<p>暂无内容</p>'}}" space="nbsp"></rich-text>
       </block>
     </scroll-view>
   </view>
@@ -41,10 +41,10 @@
   </view>
   
   <!-- 操作按钮 -->
-  <view class="action-buttons" wx:if="{{!loading && note}}">
+  <!-- <view class="action-buttons" wx:if="{{!loading && note}}">
     <button class="primary-btn" bindtap="onEdit">编辑笔记</button>
     <button class="secondary-btn" bindtap="onDelete" style="margin-top: 20rpx;">删除笔记</button>
-  </view>
+  </view> -->
 
   <!-- 笔记不存在 -->
   <view class="not-found" wx:if="{{!loading && !note}}">

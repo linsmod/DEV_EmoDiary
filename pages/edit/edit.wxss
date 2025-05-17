@@ -66,12 +66,13 @@
   box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.2);
   display: flex;
   flex-wrap: wrap;
-  justify-content:flex-start;
+  justify-content: flex-start;
   position: fixed;
   bottom: 25rpx;
   left: 0;
   z-index: 100;
 }
+
 .toolbar-item {
   min-width: 70rpx;
   height: 70rpx;
@@ -118,8 +119,9 @@
 }
 
 .toolbar-item.active {
-  background-color: #3498db;
-  color: white;
+  /* background-color: #3498db; */
+  /* color: white; */
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
 }
 
 .color-picker {
@@ -188,7 +190,7 @@
   width: 80rpx;
   background: #fff;
   border-radius: 40rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.2);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
   z-index: 999;
 }
 

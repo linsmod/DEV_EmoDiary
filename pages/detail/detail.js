@@ -98,7 +98,7 @@ Page({
 
   onEdit: function () {
     wx.navigateTo({
-      url: "/pages/edit/edit?id=" + this.data.id
+      url: "/pages/edit2/edit?id=" + this.data.id
     });
   },
 

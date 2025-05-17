@@ -1,0 +1,29 @@
+#editor {
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-height: 200px;
+    outline: none;
+}
+
+.ql-container {
+    box-sizing: border-box;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    line-height: 1.42;
+    position: relative;
+    color: #555;
+    background-color: #fff;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.ql-editor {
+    box-sizing: border-box;
+    height: 100%;
+    outline: none;
+    padding: 12px 15px;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    text-align: left;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

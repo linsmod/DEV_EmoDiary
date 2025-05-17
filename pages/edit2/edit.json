@@ -1,6 +1,6 @@
 {
   "navigationBarTitleText": "新建笔记",
   "usingComponents": {
-   
+    "custom-editor": "/components/custom-editor/custom-editor"
   }
 }

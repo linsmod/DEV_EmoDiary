@@ -1,6 +1,8 @@
 <!--pages/edit/edit.wxml-->
 <view class="container">
-  <view class="note-footer">{{res}}</view>
+  <!-- <view class="debug">{{res}} 
+  {{historyText}} {{historyIndex}}
+  </view> -->
   <!-- 标题输入和保存按钮 -->
   <view class="header-container">
     <view class="input-group title-group">
@@ -21,10 +23,12 @@
     <editor id="editor" 
             class="content-editor" 
             placeholder="请输入内容" 
+            read-only="{{readonly}}"
             show-img-size 
             show-img-toolbar 
             show-img-resize
             adjust-position="{{false}}"
+            bindfocus="onEditorFocus"
             bindready="onEditorReady"
             bindinput="onContentInput"
             bindstatuschange="onStatusChange">
@@ -60,17 +64,15 @@
   <view class="toolbar">
       <!-- 字体大小 (合并为一个按钮) -->
       <view class="toolbar-item" bindtap="toggleFontSize">
-        <text class="icon-text" wx:if="{{activeFontSize === 'small'}}">A-</text>
-        <text class="icon-text" wx:elif="{{activeFontSize === 'normal'}}">A</text>
-        <text class="icon-text" wx:elif="{{activeFontSize === 'large'}}">A+</text>
+        <text class="icon-text">A+</text>
       </view>
     
       <!-- 加粗 -->
-      <view class="toolbar-item {{formats.bold ? 'active' : ''}}" bindtap="format" data-name="bold">
+      <view class="toolbar-item {{formats.bold ? 'active' : ''}}" bindtap="toggleBold" data-name="bold">
         <text class="icon-text icon-bold">B</text>
       </view>
       <!-- 斜体 -->
-      <view class="toolbar-item {{formats.italic ? 'active' : ''}}" bindtap="format" data-name="italic">
+      <view class="toolbar-item {{formats.italic ? 'active' : ''}}" bindtap="toggleItalic" data-name="italic">
         <text class="icon-text icon-italic">I</text>
       </view>
     

@@ -1,0 +1,11 @@
+<view class="ql-container">
+    <rich-text nodes="{{content}}"></rich-text>
+    <div id="editor" contenteditable="true" class="ql-editor" bindinput="handleInput" bindpaste="handlePaste"></div>
+</view>
+
+<!-- 控制按钮 -->
+<button bindtap="undo">Undo</button>
+<button bindtap="redo">Redo</button>
+<button bindtap="clear">Clear</button>
+<button bindtap="insertText">Insert Text</button>
+<button bindtap="insertImage">Insert Image</button>
