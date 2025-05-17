@@ -22,12 +22,14 @@
 
   <!-- 内容区域 -->
   <view class="content-area">
-    <!-- 最近搜索 -->
+    <!-- 最近搜索 - 紧凑模式 -->
     <view class="recent-searches" wx:if="{{showRecent && recentSearches.length}}">
       <view class="recent-title">最近搜索</view>
-      <view wx:for="{{recentSearches}}" wx:key="time" class="recent-item">
-        <text bindtap="onSearch" data-keyword="{{item.keyword}}">{{item.keyword}}</text>
-        <image src="/images/close.svg" bindtap="removeSearchKeyword" data-index="{{index}}" class="delete-icon"></image>
+      <view class="tags-container">
+        <view wx:for="{{recentSearches}}" wx:key="time" class="search-tag">
+          <text bindtap="onSearch" data-keyword="{{item.keyword}}">{{item.keyword}}</text>
+          <image src="/images/close.svg" bindtap="removeSearchKeyword" data-index="{{index}}" class="tag-delete"></image>
+        </view>
       </view>
       <view class="clear-all" bindtap="clearRecentSearches">清空搜索历史</view>
     </view>

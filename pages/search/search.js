@@ -171,8 +171,7 @@ Page({
     pageSize: 10,
     currentPage: 0,
     recentSearches: [],
-    showRecent: true,
-    clearBtnVisible: false
+    showRecent: true
   },
 
   onLoad() {
@@ -207,10 +206,7 @@ Page({
 
   onInput(e) {
     const keyword = e.detail.value.trim();
-    this.setData({ 
-      keyword,
-      clearBtnVisible: keyword.length > 0
-    });
+    this.setData({ keyword });
     
     // 自动搜索防抖处理
     if (this.searchTimer) clearTimeout(this.searchTimer);
@@ -228,25 +224,10 @@ Page({
       } else {
         this.setData({ 
           results: [],
-          showRecent: true,
-          clearBtnVisible: false
+          showRecent: true 
         });
       }
     }, 300);
-  },
-
-  clearSearch() {
-    this.setData({
-      keyword: '',
-      results: [],
-      showRecent: true
-    });
-    // 确保输入框失去焦点，避免键盘闪烁
-    setTimeout(() => {
-      this.setData({
-        clearBtnVisible: false
-      });
-    }, 100);
   },
 
   onSearch(e) {
