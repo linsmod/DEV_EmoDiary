@@ -1,4 +1,8 @@
 // pages/edit/edit.js
+const TARGET_EDITOR = 'editor';
+const TARGET_TITLE = 'title';
+const TARGET_EDITOR_LF = 'editor:lost_focus';
+const TARGET_TITLE_LF = 'title:lost_focus';
 Page({
   data: {
     id: '',
@@ -28,13 +32,17 @@ Page({
     history: [], // for title only
     further: [], // for title only
     readonly: false,
-    historyTargetTitle: false, // 标题是否获得焦点
+    focusedTarget: 'title',
     changes: 0,
     scrollTop: 0, // 页面滚动位置
     keyboardHeight: 0, // 键盘高度
     editorMarginTop: 0 // 编辑器底部padding
   },
-
+  onEditorBlur: function () {
+    this.setData({
+      focusedTarget: TARGET_EDITOR_LF
+    });
+  },
   // 数据迁移：确保所有笔记都有有效ID
   migrateNotes: function () {
     let notes = wx.getStorageSync('notes') || [];
@@ -64,6 +72,12 @@ Page({
   onLoad: function (options) {
     // 监听键盘高度变化
     wx.onKeyboardHeightChange(res => {
+      if (this.data.focusedTarget.startsWith(TARGET_TITLE)) {
+        this.setData({
+          editorMarginTop: 0
+        });
+        return;
+      }
       const keyboardHeight = res.height;
       const toolbarHeight = 80;
       setTimeout(() => {
@@ -111,6 +125,7 @@ Page({
 
   // 处理编辑器状态变化
   onStatusChange: function (e) {
+    console.log(e)
     const formats = e.detail;
     this.setData({
       formats,
@@ -134,7 +149,7 @@ Page({
       });
 
       // 如果是编辑模式，设置编辑器内容
-      if (that.data.isEdit && that.data.content) {
+      if (that.data.isEdit) {
         // 判断内容是否为HTML格式
         if (that.data.content.indexOf('<') !== -1 && that.data.content.indexOf('>') !== -1) {
           that.data.editorCtx.setContents({
@@ -170,37 +185,36 @@ Page({
     });
 
     // 将旧标题保存到history，新标题保存到data.title
-    if (this.data.historyTargetTitle) {
-      // 清空future数组
-      this.data.further = [];
-      // 添加到history
-      this.data.history.push({
-        type: 'title',
-        oldValue: oldTitle,
-        newValue: e.detail.value,
-        time: Date.now()
-      });
-    }
+    // 清空future数组
+    this.data.further = [];
+    // 添加到history
+    this.data.history.push({
+      type: 'title',
+      oldValue: oldTitle,
+      newValue: e.detail.value,
+      time: Date.now()
+    });
     this.data.changes++;
-
   },
 
   // 标题获得焦点
   onTitleFocus: function (e) {
     this.setData({
-      historyTargetTitle: true,
+      focusedTarget: TARGET_TITLE,
       // readonly: true
     });
   },
 
   // 标题失去焦点
   onTitleBlur: function (e) {
-
+    this.setData({
+      focusedTarget: TARGET_TITLE_LF,
+    });
   },
 
   onEditorFocus: function (e) {
     this.setData({
-      historyTargetTitle: false,
+      focusedTarget: TARGET_EDITOR,
       readonly: false
     });
   },
@@ -414,7 +428,7 @@ Page({
     this.saveNote();
   },
   undo: function () {
-    if (this.data.historyTargetTitle) {
+    if (this.data.focusedTarget.startsWith(TARGET_TITLE)) {
       // 标题的撤销操作
       if (this.data.history.length > 0) {
         const lastChange = this.data.history.pop();
@@ -450,7 +464,7 @@ Page({
   },
 
   redo: function () {
-    if (this.data.historyTargetTitle) {
+    if (this.data.focusedTarget.startsWith(TARGET_TITLE)) {
       // 标题的重做操作
       if (this.data.further.length > 0) {
         const nextChange = this.data.further.pop();

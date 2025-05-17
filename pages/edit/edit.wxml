@@ -9,7 +9,7 @@
     
     <!-- 时间显示和字数统计 -->
     <view class="note-time">
-      最后更新 {{updateTimeStr}} · 字数: {{wordCount || 0}}
+      最后更新 {{updateTimeStr}} · 字数: {{wordCount || 0}} {{focusedTarget}}
       <!-- <view class="debug">
       · KBH: {{keyboardHeight}} - st: {{scrollTop}}
       </view> -->
@@ -18,6 +18,7 @@
     <!-- 内容输入 -->
     <view class="note-content content-group">
       <editor id="editor" 
+              bindblur="onEditorBlur"
               class="content-editor" 
               placeholder="请输入内容" 
               read-only="{{readonly}}"
