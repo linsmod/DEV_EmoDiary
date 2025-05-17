@@ -1,4 +1,4 @@
 <view class="editor-container">
     <rich-text nodes="{{content}}" class="content-display"></rich-text>
-    <div id="editor" contenteditable="true" class="editor-area" bindinput="handleInput" bindpaste="handlePaste"></div>
+    <div contenteditable="true" class="editor-content" bindinput="handleInput" bindpaste="handlePaste"></div>
 </view>

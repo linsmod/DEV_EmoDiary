@@ -6,6 +6,10 @@ Component({
             observer(newVal) {
                 this.setData({ content: newVal });
                 this.saveState();
+                // 更新编辑器内容
+                setTimeout(() => {
+                    this.updateEditorContent();
+                }, 50);
             }
         }
     },
@@ -21,10 +25,27 @@ Component({
             if (this.properties.initialContent) {
                 this.setData({ content: this.properties.initialContent });
                 this.saveState();
+                // 在编辑器准备好后设置内容
+                setTimeout(() => {
+                    this.updateEditorContent();
+                }, 100);
             }
         }
     },
     methods: {
+        // 更新编辑器内容
+        updateEditorContent() {
+            const that = this;
+            wx.createSelectorQuery().in(this).select('#editor').context(function(res) {
+                if (res && res.context) {
+                    // 使用execCommand来设置内容，这在小程序环境中更可靠
+                    res.context.execCommand('selectAll', false);
+                    res.context.execCommand('delete', false);
+                    res.context.execCommand('insertHTML', false, that.data.content);
+                }
+            }).exec();
+        },
+        
         handleInput(e) {
             const newContent = e.detail.html;
             this.setData({ content: newContent });
@@ -63,6 +84,10 @@ Component({
         setContents(htmlContent) {
             this.setData({ content: htmlContent || '' });
             this.saveState();
+            // 更新编辑器内容
+            setTimeout(() => {
+                this.updateEditorContent();
+            }, 50);
         },
         insertText(text) {
             const that = this;

@@ -9,7 +9,7 @@
     display: none;
 }
 
-#editor {
+.editor-content {
     border: 1px solid #eee;
     padding: 20rpx;
     min-height: 200px;
@@ -25,67 +25,71 @@
 }
 
 /* 格式化样式 */
-#editor b, #editor strong {
+.editor-content .bold-text,
+.editor-content .strong-text {
     font-weight: bold;
 }
 
-#editor i, #editor em {
+.editor-content .italic-text,
+.editor-content .em-text {
     font-style: italic;
 }
 
-#editor u {
+.editor-content .underline-text {
     text-decoration: underline;
 }
 
-#editor s, #editor strike, #editor del {
+.editor-content .strike-text,
+.editor-content .del-text {
     text-decoration: line-through;
 }
 
-#editor img {
+.editor-content .image {
     max-width: 100%;
     height: auto;
     margin: 10rpx 0;
     display: block;
 }
 
-#editor p {
+.editor-content .paragraph {
     margin: 10rpx 0;
     min-height: 1em;
 }
 
-#editor ul, #editor ol {
+.editor-content .unordered-list,
+.editor-content .ordered-list {
     padding-left: 40rpx;
     margin: 10rpx 0;
 }
 
-#editor ul li {
+.editor-content .unordered-list .list-item {
     list-style-type: disc;
 }
 
-#editor ol li {
+.editor-content .ordered-list .list-item {
     list-style-type: decimal;
 }
 
-#editor blockquote {
+.editor-content .blockquote {
     border-left: 4rpx solid #ccc;
     padding-left: 20rpx;
     margin: 10rpx 0;
     color: #666;
 }
 
-#editor a {
+.editor-content .link {
     color: #07c160;
     text-decoration: underline;
 }
 
-#editor div[style*="text-align: center"] {
+.editor-content .text-center {
     text-align: center;
 }
 
-#editor div[style*="text-align: right"] {
+.editor-content .text-right {
     text-align: right;
 }
 
-#editor div[style*="text-align: justify"] {
+.editor-content .text-justify {
     text-align: justify;
 }

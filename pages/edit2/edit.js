@@ -26,6 +26,11 @@ Page({
         noteId: options.id
       });
       this.loadNoteData(options.id);
+    } else {
+      // 新建笔记，设置默认内容
+      this.setData({
+        initialContent: '<p>请输入内容...</p>'
+      });
     }
   },
 
@@ -34,6 +39,15 @@ Page({
    */
   onReady() {
     this.editor = this.selectComponent('#editor');
+    
+    // 如果是编辑现有笔记，确保内容已经加载
+    if (this.data.noteId && this.data.initialContent) {
+      setTimeout(() => {
+        if (this.editor) {
+          this.editor.setContents(this.data.initialContent);
+        }
+      }, 100);
+    }
   },
 
   /**
@@ -62,11 +76,33 @@ Page({
     const note = notes.find(n => n.id === noteId);
     
     if (note) {
+      console.log('加载笔记数据:', note);
+      
+      // 使用updateTime或createTime创建时间字符串
+      const timestamp = note.updateTime || note.createTime || Date.now();
+      const date = new Date(timestamp);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const timeStr = `${year}年${month}月${day}日 ${hours}:${minutes}`;
+      
       this.setData({
         title: note.title,
-        initialContent: note.content,
-        noteTime: note.time
+        initialContent: note.content || '<p>请输入内容...</p>',
+        noteTime: timeStr,
+        createTime: note.createTime,
+        updateTime: note.updateTime
       });
+      
+      // 确保编辑器组件已经准备好
+      setTimeout(() => {
+        const editor = this.selectComponent('#editor');
+        if (editor) {
+          editor.setContents(note.content || '<p>请输入内容...</p>');
+        }
+      }, 300);
     }
   },
 
@@ -93,13 +129,16 @@ Page({
       return;
     }
     
-    // 准备笔记数据
+    // 准备笔记数据，与edit页面保持一致
+    const now = new Date();
     const noteData = {
       id: this.data.noteId || Date.now().toString(),
       title: this.data.title,
       content: content,
-      time: this.data.noteTime,
-      updateTime: new Date().getTime()
+      updateTime: now.getTime(),
+      updateTimeStr: `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
+      // 如果是新笔记，设置createTime；如果是编辑现有笔记，保留原有的createTime
+      createTime: this.data.createTime || now.getTime()
     };
     
     // 从本地存储获取现有笔记
