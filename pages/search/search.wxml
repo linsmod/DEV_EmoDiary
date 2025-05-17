@@ -13,7 +13,7 @@
         focus="{{true}}"
         value="{{keyword}}"
       />
-      <view class="clear-btn" wx:if="{{keyword && keyword.length > 0}}" bindtap="clearSearch">
+      <view class="clear-btn" wx:if="{{keyword && keyword.length > 0}}" bindtap="clearInput">
         <image src="/images/close.svg" mode="aspectFit"></image>
       </view>
     </view>

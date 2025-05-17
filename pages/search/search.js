@@ -380,6 +380,13 @@ searchNotes() {
   },
 
   // 清空所有搜索记录
+  clearInput() {
+    this.setData({
+      keyword: '',
+      clearBtnVisible: false
+    });
+  },
+
   clearRecentSearches() {
     wx.showModal({
       title: '提示',
