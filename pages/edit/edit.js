@@ -25,10 +25,11 @@ Page({
     startY: 0,
     buttonMoving: false, // 是否正在拖动
     debounceTimer: null,
-    history: [],
-    historyIndex: 0,
+    history: [], // for title only
+    further: [], // for title only
     supressEvents: 0,
-    readonly: false
+    readonly: false,
+    historyTargetTitle: false // 标题是否获得焦点
   },
 
   // 数据迁移：确保所有笔记都有有效ID
@@ -137,18 +138,51 @@ Page({
 
   // 标题输入事件
   onTitleInput: function (e) {
-    const now = Date();
+    const now = new Date();
+    const oldTitle = this.data.title;
     this.setData({
       title: e.detail.value,
       wordCount: 0,
       updateTime: now.getTime(),
       updateTimeStr: `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
     });
-    this.createNewHistoryItem('修改标题', this.data.title, e.detail.value);
+
+    // 将旧标题保存到history，新标题保存到data.title
+    if (this.data.historyTargetTitle) {
+      // 清空future数组
+      this.data.further = [];
+      // 添加到history
+      this.data.history.push({
+        type: 'title',
+        oldValue: oldTitle,
+        newValue: e.detail.value,
+        time: Date.now()
+      });
+    }
+
     this.updateUndoRedoStatus();
   },
-  onEditorFocus: function (e) {
 
+  // 标题获得焦点
+  onTitleFocus: function (e) {
+    this.setData({
+      historyTargetTitle: true,
+      // readonly: true
+    });
+  },
+
+  // 标题失去焦点
+  onTitleBlur: function (e) {
+
+  },
+
+  onEditorFocus: function (e) {
+    this.setData({
+      historyTargetTitle: false,
+      readonly: false
+    });
+    debugger
+    return false;
   },
   // 内容输入事件
   onContentInput: function (e) {
@@ -394,38 +428,82 @@ Page({
   },
   // 更新撤销/重做状态
   updateUndoRedoStatus: function () {
-    this.setData({
-      canUndo: this.data.history.length > 0,
-      canRedo: this.data.history.length > 0 && this.data.historyIndex < this.data.history.length - 1
-    });
+    if (this.data.historyTargetTitle) {
+      // 标题焦点：使用history和further数组
+      this.setData({
+        canUndo: this.data.history.length > 0,
+        canRedo: this.data.further.length > 0
+      });
+    } else {
+      // 编辑器焦点：使用编辑器的状态
+      // 注意：微信小程序的editor组件没有提供获取撤销/重做状态的API
+      // 这里我们只能简单地设置为true，让按钮始终可用
+      this.setData({
+        canUndo: true,
+        canRedo: true
+      });
+    }
   },
   undo: function () {
-    if (!this.data.editorCtx) return;
+    if (this.data.historyTargetTitle) {
+      // 标题的撤销操作
+      if (this.data.history.length > 0) {
+        const lastChange = this.data.history.pop();
+        if (lastChange.type === 'title') {
+          // 保存当前状态到future数组
+          this.data.further.push({
+            type: 'title',
+            oldValue: this.data.title,
+            newValue: lastChange.newValue,
+            time: Date.now()
+          });
 
-    // editor无法标记初始内容，一直undo到底会导致把初始内容清空
-    // 我们用自己存的初始内容来做判断判断
-    // 但这有概率会导致编辑内容和初始内容一致时undo被阻止，
-    // 但是我们必须这么做，否则体验会更差
-    if (this.data.isEdit && this.data.initialContent === this.data.content) {
-      return;
+          // 恢复到上一个状态
+          this.setData({
+            title: lastChange.oldValue
+          });
+        }
+      }
+    } else {
+      // 编辑器的撤销操作
+      if (!this.data.editorCtx) return;
+
+      // 防止清空初始内容
+      if (this.data.isEdit && this.data.initialContent === this.data.content) {
+        return;
+      }
+
+      this.data.editorCtx.undo();
     }
-    // this.data.editorCtx.bindToWindow = function (ui) {
-    //   ui.window = parent
-    // }.bind(this.data.editorCtx);
-    // this.data.editorCtx.bindToWindow(this);
-
-    // this.window[0].alert("HELLO WORLD")
-    // this.data.editorCtx._execCommand('function() testDump{return location.href};testDump', {
-    //   needCallBack: 1,
-    //   complete: function (e) {
-    //     console.log(e)
-    //   }
-    // })
-    this.data.editorCtx.undo()
+    this.updateUndoRedoStatus();
   },
+
   redo: function () {
-    if (!this.data.editorCtx) return;
-    this.data.editorCtx.redo()
+    if (this.data.historyTargetTitle) {
+      // 标题的重做操作
+      if (this.data.further.length > 0) {
+        const nextChange = this.data.further.pop();
+        if (nextChange.type === 'title') {
+          // 保存当前状态到history数组
+          this.data.history.push({
+            type: 'title',
+            oldValue: this.data.title,
+            newValue: nextChange.newValue,
+            time: Date.now()
+          });
+
+          // 恢复到下一个状态
+          this.setData({
+            title: nextChange.newValue
+          });
+        }
+      }
+    } else {
+      // 编辑器的重做操作
+      if (!this.data.editorCtx) return;
+      this.data.editorCtx.redo();
+    }
+    this.updateUndoRedoStatus();
   },
   // 撤销操作
   // undo: function () {

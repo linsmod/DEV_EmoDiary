@@ -6,7 +6,7 @@
   <!-- 标题输入和保存按钮 -->
   <view class="header-container">
     <view class="input-group title-group">
-      <input class="title-input" placeholder="请输入标题" value="{{title}}" bindinput="onTitleInput" maxlength="100" />
+      <input class="title-input" placeholder="请输入标题" value="{{title}}" bindinput="onTitleInput" bindfocus="onTitleFocus" bindblur="onTitleBlur" maxlength="100" />
     </view>
     <!-- 保存按钮 -->
     <view class="primary-btn" bindtap="onSave" style="margin-left: 20rpx;">
