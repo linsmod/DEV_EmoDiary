@@ -55,9 +55,8 @@ Page({
     const note = notes.find(n => n.id === this.data.id);
 
     if (note) {
-      const getTextLength = (html) => {
-        return html ? html.replace(/<[^>]+>/g, '').length : 0;
-      };
+      // 引入公共字数统计函数
+      const { getTextLength } = require('../../utils/textUtils');
 
       // 处理内容为行数组
       let lines = note.content.split('\n').map(line => {

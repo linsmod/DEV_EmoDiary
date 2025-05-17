@@ -7,9 +7,9 @@
       <input class="note-title title-input" placeholder="请输入标题" value="{{title}}" bindinput="onTitleInput" bindfocus="onTitleFocus" bindblur="onTitleBlur" maxlength="100" />
     </view>
     
-    <!-- 时间显示 -->
+    <!-- 时间显示和字数统计 -->
     <view class="note-time">
-      最后更新 {{updateTimeStr}} · {{wordCount || 0}}字
+      最后更新 {{updateTimeStr}} · 字数: {{wordCount || 0}}
     </view>
     
     <!-- 内容输入 -->

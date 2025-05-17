@@ -132,6 +132,10 @@ Page({
             html: that.data.content.split('\n').map(x => `<p>${x}</p>`).join(''),
           });
         }
+        // 初始化字数统计
+        that.setData({
+          wordCount: that.getTextLength(that.data.content)
+        });
       }
       that.setData({ history: [], historyIndex: -1 })
     }).exec();
@@ -458,13 +462,8 @@ Page({
     }
   },
 
-  // 计算纯文本长度（去除HTML标签）
-  getTextLength: function (html) {
-    if (!html) return 0;
-    // 简单去除HTML标签
-    const text = html.replace(/<[^>]+>/g, '');
-    return text.length;
-  },
+  // 引入公共字数统计函数
+  getTextLength: require('../../utils/textUtils').getTextLength,
 
   // 浮动按钮触摸开始
   onButtonTouchStart: function (e) {
