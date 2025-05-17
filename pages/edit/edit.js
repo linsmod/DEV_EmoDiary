@@ -28,7 +28,7 @@ Page({
     history: [],
     historyIndex: 0,
     supressEvents: 0,
-    readonly: true
+    readonly: false
   },
 
   // 数据迁移：确保所有笔记都有有效ID
@@ -70,6 +70,7 @@ Page({
           id: note.id,
           title: note.title,
           content: note.content,
+          initialContent: note.content,
           updateTime: note.updateTime,
           updateTimeStr: note.updateTimeStr,
           isEdit: true
@@ -400,18 +401,26 @@ Page({
   },
   undo: function () {
     if (!this.data.editorCtx) return;
-    this.data.editorCtx.bindToWindow = function (ui) {
-      ui.window = parent
-    }.bind(this.data.editorCtx);
-    this.data.editorCtx.bindToWindow(this);
 
-    this.window[0].alert("HELLO WORLD")
-    this.data.editorCtx._execCommand('function() testDump{return location.href};testDump', {
-      needCallBack: 1,
-      complete: function (e) {
-        console.log(e)
-      }
-    })
+    // editor无法标记初始内容，一直undo到底会导致把初始内容清空
+    // 我们用自己存的初始内容来做判断判断
+    // 但这有概率会导致编辑内容和初始内容一致时undo被阻止，
+    // 但是我们必须这么做，否则体验会更差
+    if (this.data.isEdit && this.data.initialContent === this.data.content) {
+      return;
+    }
+    // this.data.editorCtx.bindToWindow = function (ui) {
+    //   ui.window = parent
+    // }.bind(this.data.editorCtx);
+    // this.data.editorCtx.bindToWindow(this);
+
+    // this.window[0].alert("HELLO WORLD")
+    // this.data.editorCtx._execCommand('function() testDump{return location.href};testDump', {
+    //   needCallBack: 1,
+    //   complete: function (e) {
+    //     console.log(e)
+    //   }
+    // })
     this.data.editorCtx.undo()
   },
   redo: function () {

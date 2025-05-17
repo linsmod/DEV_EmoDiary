@@ -25,7 +25,7 @@ Page({
     }
   },
 
-  onReady: function() {
+  onReady: function () {
     if (this.data.targetLine > 0) {
       setTimeout(() => {
         const query = wx.createSelectorQuery();
@@ -66,7 +66,7 @@ Page({
         const regex = new RegExp(this.data.highlight, 'gi');
         lines = lines.map(lineNodes => {
           const lineText = lineNodes[0].children[0].text;
-          const highlighted = lineText.replace(regex, 
+          const highlighted = lineText.replace(regex,
             `<span class="highlight">$&</span>`);
           return [{
             name: 'div',
@@ -98,7 +98,7 @@ Page({
 
   onEdit: function () {
     wx.navigateTo({
-      url: "/pages/edit2/edit?id=" + this.data.id
+      url: "/pages/edit/edit?id=" + this.data.id
     });
   },
 
