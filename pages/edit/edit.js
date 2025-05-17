@@ -27,9 +27,9 @@ Page({
     debounceTimer: null,
     history: [], // for title only
     further: [], // for title only
-    supressEvents: 0,
     readonly: false,
-    historyTargetTitle: false // 标题是否获得焦点
+    historyTargetTitle: false, // 标题是否获得焦点
+    changes: 0
   },
 
   // 数据迁移：确保所有笔记都有有效ID
@@ -108,6 +108,7 @@ Page({
       activeItalic: formats.italic || '',
       activeUnderline: formats.underline || '',
     });
+    this.data.changes++;
   },
 
   // 编辑器初始化完成时触发
@@ -159,8 +160,8 @@ Page({
         time: Date.now()
       });
     }
+    this.data.changes++;
 
-    this.updateUndoRedoStatus();
   },
 
   // 标题获得焦点
@@ -181,24 +182,17 @@ Page({
       historyTargetTitle: false,
       readonly: false
     });
-    debugger
-    return false;
   },
   // 内容输入事件
   onContentInput: function (e) {
-    if (this.data.supressEvents > 0) {
-      this.data.supressEvents--;
-      return;
-    }
     // 编辑器的输入事件会返回HTML内容
     this.setData({
       content: e.detail.html || '',
       wordCount: this.getTextLength(e.detail.html || '')
     });
     // No need record the content because we use editorContext to perform redo/undo
-    this.createNewHistoryItem('编辑内容', this.data.content, e);
-    // 更新撤销/重做状态
-    this.updateUndoRedoStatus();
+    
+    this.data.changes++;
   },
 
   // 切换字体大小
@@ -238,8 +232,7 @@ Page({
     this.runAction(() => {
       this.data.editorCtx.format('fontSize', fontSize);
     })
-    this.createNewHistoryItem('修改字号');
-    this.updateUndoRedoStatus();
+
   },
 
   // 显示颜色选择器
@@ -259,8 +252,7 @@ Page({
     this.runAction(() => {
       this.data.editorCtx.format('backgroundColor', color);
     })
-    this.createNewHistoryItemForSelection('修改文本背景色');
-    this.updateUndoRedoStatus();
+
   },
 
   // 切换对齐方式
@@ -276,8 +268,7 @@ Page({
     this.runAction(() => {
       this.data.editorCtx.format('align', nextAlign);
     })
-    this.createNewHistoryItemForSelection('修改文本对齐');
-    this.updateUndoRedoStatus();
+
   },
 
   // 切换列表类型
@@ -294,9 +285,6 @@ Page({
     this.runAction(() => {
       this.data.editorCtx.format('list', nextList);
     })
-
-    this.createNewHistoryItem('修改列表样式');
-    this.updateUndoRedoStatus();
   },
 
   runAction: function (func) {
@@ -315,21 +303,18 @@ Page({
     this.runAction(() => {
       this.data.editorCtx.format('bold', this.data.activeBold == 'strong' ? '' : 'strong');
     })
-    this.createNewHistoryItemForSelection('修改粗体');
-    this.updateUndoRedoStatus();
   },
   toggleItalic: function (e) {
     this.runAction(() => {
       this.data.editorCtx.format('italic', this.data.activeItalic == 'em' ? '' : 'em');
     })
-    this.createNewHistoryItemForSelection('修改斜体');
-    this.updateUndoRedoStatus();
   },
 
   // 自动保存
   autoSave: function () {
-    if (this.data.title || this.data.content) {
+    if (this.data.changes > 0) {
       this.saveNote(true);
+      this.data.changes = 0;
     }
   },
 
@@ -340,12 +325,12 @@ Page({
 
     // 如果标题和内容都为空，不保存
     if (!title && !content) {
-      if (!isAutoSave) {
-        wx.showToast({
-          title: '笔记内容不能为空',
-          icon: 'none'
-        });
-      }
+      // if (!isAutoSave) {
+      //   wx.showToast({
+      //     title: '笔记内容不能为空',
+      //     icon: 'none'
+      //   });
+      // }
       return;
     }
 
@@ -407,43 +392,6 @@ Page({
   onSave: function () {
     this.saveNote();
   },
-
-  createNewHistoryItemForSelection(op, before, after) {
-    return;
-    const that = this;
-    this.data.editorCtx.getSelectionText({
-      success: (res) => {
-        if (!res.text) {
-          return;
-        }
-        that.createNewHistoryItem(op, before, after);
-      }
-    });
-  },
-  createNewHistoryItem(op, before, after) {
-    const h = this.data.history.splice(0, this.data.historyIndex + 1)
-    h.push({ 'op': op, oldValue: before, newValue: after, 'time': Date.now() });
-    this.setData({ history: h, historyIndex: h.length - 1, historyText: JSON.stringify(h.map(x => x.op)) });
-    console.log('do', JSON.stringify(op), h[this.data.historyIndex])
-  },
-  // 更新撤销/重做状态
-  updateUndoRedoStatus: function () {
-    if (this.data.historyTargetTitle) {
-      // 标题焦点：使用history和further数组
-      this.setData({
-        canUndo: this.data.history.length > 0,
-        canRedo: this.data.further.length > 0
-      });
-    } else {
-      // 编辑器焦点：使用编辑器的状态
-      // 注意：微信小程序的editor组件没有提供获取撤销/重做状态的API
-      // 这里我们只能简单地设置为true，让按钮始终可用
-      this.setData({
-        canUndo: true,
-        canRedo: true
-      });
-    }
-  },
   undo: function () {
     if (this.data.historyTargetTitle) {
       // 标题的撤销操作
@@ -462,6 +410,7 @@ Page({
           this.setData({
             title: lastChange.oldValue
           });
+          this.data.changes++;
         }
       }
     } else {
@@ -474,8 +423,9 @@ Page({
       }
 
       this.data.editorCtx.undo();
+      // Assumming have a change forcely
+      this.data.changes++;
     }
-    this.updateUndoRedoStatus();
   },
 
   redo: function () {
@@ -496,41 +446,17 @@ Page({
           this.setData({
             title: nextChange.newValue
           });
+          this.data.changes++;
         }
       }
     } else {
       // 编辑器的重做操作
       if (!this.data.editorCtx) return;
       this.data.editorCtx.redo();
+      //Assuming a changes
+      this.data.changes++;
     }
-    this.updateUndoRedoStatus();
   },
-  // 撤销操作
-  // undo: function () {
-  //   if (!this.data.editorCtx) return;
-  //   const postUndoPos = this.data.historyIndex - 1;
-  //   if (postUndoPos >= -1 && postUndoPos <= this.data.history.length - 1) {
-  //     console.log('undo', this.data.history[this.data.historyIndex].op, this.data.history[this.data.historyIndex])
-  //     this.data.supressEvents ++;
-  //     const that = this;
-  //     this.data.editorCtx.undo()
-  //     this.setData({
-  //       historyIndex: postUndoPos
-  //     });
-  //   }
-  // },
-
-  // 重做操作
-  // redo: function () {
-  //   if (!this.data.editorCtx) return;
-  //   const postRedoPos = this.data.historyIndex + 1;
-  //   if (postRedoPos >= 0 && postRedoPos <= this.data.history.length - 1) {
-  //     this.data.editorCtx.redo();
-  //     this.setData({
-  //       historyIndex: postRedoPos
-  //     });
-  //   }
-  // },
 
   // 计算纯文本长度（去除HTML标签）
   getTextLength: function (html) {

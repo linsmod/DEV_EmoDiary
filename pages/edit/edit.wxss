@@ -1,60 +1,57 @@
 /* pages/edit/edit.wxss */
 .container {
-  padding: 0;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 标题区域和保存按钮容器 */
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx;
-  background-color: white;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
-  width: 100%;
+  padding: 30rpx 20rpx;
+  background-color: #f8f8f8;
+  min-height: 100vh;
   box-sizing: border-box;
 }
 
-.input-group {
+.note-detail {
   background-color: white;
   border-radius: 10rpx;
-  width: 100%;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 30rpx;
+  position: relative;
 }
 
-.title-group {
-  flex: 1;
-  margin-right: 20rpx;
-  padding-right: 20rpx;
+.note-title {
+  font-size: 40rpx;
+  font-weight: 500;
+  margin-bottom: 20rpx;
+  color: #333;
+  word-wrap: break-word;
+  width: 100%;
+  padding: 10rpx 0;
 }
 
 .note-time {
   font-size: 24rpx;
   color: #999;
+  margin-bottom: 30rpx;
 }
 
-.title-input {
+.note-content {
+  font-size: 32rpx;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 40rpx;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  min-height: 300rpx;
+  height: 100%;
   width: 100%;
-  font-size: 34rpx;
-  font-weight: 500;
-  padding: 10rpx 0;
 }
 
-/* 右上角保存按钮 */
-.save-button {
-  background-color: #3498db;
+/* 保存按钮 */
+.primary-btn {
+  background-color: #07C160;
   color: white;
-  text-align: center;
-  padding: 20rpx 30rpx;
-  border-radius: 10rpx;
+  border-radius: 40rpx;
+  padding: 20rpx;
   font-size: 28rpx;
-  box-shadow: 0 4rpx 10rpx rgba(52, 152, 219, 0.3);
-  white-space: nowrap;
+  text-align: center;
+  margin-bottom: 20rpx;
 }
 
 /* 工具栏样式 */
@@ -154,24 +151,11 @@
   border: 1rpx solid #ddd;
 }
 
-.content-group {
-  flex: 1;
-  padding: 0;
-  background-color: white;
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  margin-top: 0;
-}
-
 .content-editor {
   flex: 1;
   width: 100%;
   font-size: 30rpx;
   line-height: 1.6;
-  padding: 20rpx;
   box-sizing: border-box;
   min-height: 300rpx;
   height: 100%;
