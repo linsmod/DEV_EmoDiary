@@ -82,6 +82,7 @@
   margin: 8rpx;
   border-radius: 15%;
   background-color: #f0f0f0;
+   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
 }
 
 .icon-text {
@@ -114,12 +115,11 @@
 
 .toolbar-item.active .icon-text,
 .toolbar-item.active .icon-image {
-  color: #3498db;
+  color: white;
 }
 
 .toolbar-item.active {
-  color: #3498db;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
+  background-color:#999;
 }
 
 /* 颜色选择器面板 */
@@ -127,7 +127,7 @@
   width: 100%;
   background-color: white;
   border-radius: 10rpx;
-  border-top: 0.5px solid #fff3be;
+  border-top: 0.5px solid #ffbefc;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
   display: flex;
   flex-wrap: wrap;

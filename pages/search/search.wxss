@@ -54,7 +54,8 @@
   padding: 8rpx 15rpx;
   font-size: 26rpx;
   color: #333;
-  display:flex
+  display:flex;
+  min-width:120rpx;
 }
 
 .search-tag:active {
