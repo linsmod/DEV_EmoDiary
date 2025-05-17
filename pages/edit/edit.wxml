@@ -81,7 +81,7 @@
         <image class="icon-image" wx:if="{{activeAlign === 'left'}}" src="/images/icons/align-left.svg" mode="aspectFit"></image>
         <image class="icon-image" wx:elif="{{activeAlign === 'center'}}" src="/images/icons/align-center.svg" mode="aspectFit"></image>
         <image class="icon-image" wx:elif="{{activeAlign === 'right'}}" src="/images/icons/align-right.svg" mode="aspectFit"></image>
-        <image class="icon-image" wx:elif="{{activeAlign === 'justify'}}" src="/images/icons/align-right.svg" mode="aspectFit"></image>
+        <image class="icon-image" wx:elif="{{activeAlign === 'justify'}}" src="/images/icons/align-justify.svg" mode="aspectFit"></image>
       </view>
     
       <!-- 列表 (合并为一个按钮，支持三种状态) -->
