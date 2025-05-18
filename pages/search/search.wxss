@@ -49,13 +49,18 @@
 }
 
 .search-tag {
-  position: relative;
   background: #f5f5f5;
   padding: 8rpx 15rpx;
   font-size: 26rpx;
   color: #333;
   display:flex;
-  min-width:120rpx;
+  justify-content: space-between;
+  width: calc(50% - 40rpx); /* 调整 min-width，避免 gap 影响 */
+  
+  /* 关键代码：让文本超出时显示省略号 */
+  white-space: nowrap;      /* 禁止换行 */
+  overflow: hidden;         /* 隐藏超出部分 */
+  text-overflow: ellipsis;  /* 显示省略号 */
 }
 
 .search-tag:active {
@@ -153,15 +158,15 @@
   right: 20rpx;
   top: 50%;
   transform: translateY(-50%);
-  width: 50rpx; /* 增大点击区域 */
-  height: 50rpx;
+  width: 60rpx; /* 增大点击区域 */
+  height: 60rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.6;
+  opacity: 0.8;
   background: rgba(0,0,0,0.1);
   border-radius: 50%;
-  z-index: 10; /* 确保在最上层 */
+  z-index: 999; /* 确保在最上层 */
 }
 
 .clear-btn:active {

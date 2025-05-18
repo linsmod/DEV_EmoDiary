@@ -328,7 +328,7 @@ Page({
       readonly: false
     })
     func();
-    this.data.editorCtx.focus()
+    wx.hideKeyboard();
     this.setData({
       readonly: rd
     });
