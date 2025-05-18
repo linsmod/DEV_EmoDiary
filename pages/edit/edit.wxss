@@ -61,7 +61,6 @@
   top: 0;
   background-color:white;
   z-index: 100;
-  padding: 10rpx 0;
 }
 
 /* 工具栏样式 */
@@ -73,6 +72,7 @@
   justify-content: space-between;
   padding-bottom: 18rpx;
   border-bottom: 2px solid steelblue;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.2);
 }
 
 .toolbar-item {
@@ -88,7 +88,7 @@
 }
 
 .toolbar-item .icon-text {
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: bold;
   color: #333;
 }
@@ -123,10 +123,10 @@
 /* 颜色选择器面板 */
 .color-picker-panel {
   position: absolute;
-  top: 100%;
+  top: 95%;
   right: 0;
-  width: 80%;
-  background-color: #fffffff0;
+  width: 85%;
+  background-color: #ffffff;
   border-radius: 0 0 15% 15%;
   border-bottom: 3px solid #6d2ed1;
   box-shadow: 0 12rpx 10rpx rgba(0, 0, 0, 0.2);

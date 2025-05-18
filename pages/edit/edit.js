@@ -31,8 +31,8 @@ Page({
     activeFontSize: '', // 当前激活的字体大小
     formatsJSON: '',
     // 浮动按钮相关
-    floatRight: 30, // 按钮初始位置
-    floatTop: 100,
+    floatRight: 28, // 按钮初始位置
+    floatTop: 180,
     startX: 0, // 触摸起始位置
     startY: 0,
     buttonMoving: false, // 是否正在拖动
