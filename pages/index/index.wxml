@@ -4,7 +4,7 @@
   <view class="primary-btn" wx:if="{{!isSelectionMode}}" bindtap="onNewNote" style="position: fixed; right: 40rpx; bottom: 80rpx;">
     <view class="btn-content">
       <text class="add-icon">+</text>
-      <text>新建笔记</text>
+      <text>新笔记</text>
     </view>
   </view>
 
@@ -43,7 +43,7 @@
 
   <!-- 底部操作栏 -->
   <view class="action-bar" wx:if="{{isSelectionMode}}">
-    <view class="action-item action-cancel" bindtap="exitSelectionMode">取消</view>
+    <!-- <view class="action-item action-cancel" bindtap="exitSelectionMode">取消</view> -->
     <view class="action-item action-delete" bindtap="onBatchDelete">
       <view class="delete-btn-content">
         <image src="/images/delete.svg" mode="aspectFit" class="delete-icon"/>

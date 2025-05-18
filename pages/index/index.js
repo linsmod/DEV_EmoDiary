@@ -138,7 +138,7 @@ Page({
     const that = this;
     wx.showModal({
       title: '确认删除',
-      content: `确定要删除选中的${this.data.selectedNotes.length}条笔记吗？`,
+      content: `将删除所选${this.data.selectedNotes.length}条笔记`,
       success: function (res) {
         if (res.confirm) {
           let notes = wx.getStorageSync('notes') || [];

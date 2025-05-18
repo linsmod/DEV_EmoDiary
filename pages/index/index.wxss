@@ -72,7 +72,7 @@
 
 .note-selected {
   background-color: #f0f9ff;
-  border: 1rpx solid #66b0e1;
+  border: 1rpx solid rgb(138, 192, 228);
 }
 
 .note-check {
@@ -183,7 +183,7 @@
   background-color: white;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 60rpx;
   padding-bottom: env(safe-area-inset-bottom);
   box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.2);
