@@ -4,16 +4,8 @@
   <view class="search-container">
     <view class="search-bar">
       <image class="search-icon" src="/images/search.svg" mode="aspectFit"></image>
-      <input 
-        placeholder="搜索笔记" 
-        bindinput="onInput" 
-        bindconfirm="onSearch"
-        confirm-type="search"
-        auto-focus
-        focus="{{true}}"
-        value="{{keyword}}"
-      />
-      <view class="clear-btn" wx:if="{{keyword && keyword.length > 0}}" bindtap="clearInput">
+      <input placeholder="搜索笔记" bindinput="onInput" bindconfirm="onSearch" confirm-type="search" auto-focus focus="{{true}}" value="{{keyword}}" />
+      <view class="clear-btn" wx:if="{{keyword.length>0}}" catchtap="clearInput">
         <image src="/images/close.svg" mode="aspectFit"></image>
       </view>
     </view>
@@ -23,32 +15,24 @@
   <!-- 内容区域 -->
   <view class="content-area">
     <!-- 最近搜索 - 紧凑模式 -->
-    <view class="recent-searches" wx:if="{{showRecent && recentSearches.length}}">
+    <view class="recent-searches" wx:if="{{keyword.length==0 && recentSearches.length}}">
       <view class="recent-header">
         <view class="recent-title">最近搜索</view>
         <view class="delete-btn" bindtap="toggleManageMode" wx:if="{{!isManageMode}}">
-          <image src="/images/delete.svg" mode="aspectFit"></image>
+         <text>管理</text> <image src="/images/delete.svg" mode="aspectFit"></image>
+        </view>
+        <view class="manage-actions" wx:if="{{isManageMode}}">
+          <view class="action-btn danger" bindtap="clearRecentSearches">清空</view>
+          <view class="action-btn" bindtap="finishManage">完成</view>
         </view>
       </view>
-      
+
       <view class="tags-container">
-        <view wx:for="{{recentSearches}}" wx:key="time" class="search-tag">
-          <text bindtap="{{isManageMode ? '' : 'onSearch'}}" data-keyword="{{item.keyword}}">{{item.keyword}}</text>
-          <image 
-            wx:if="{{isManageMode}}"
-            src="/images/close.svg" 
-            bindtap="removeSearchKeyword" 
-            data-index="{{index}}" 
-            class="tag-delete"
-          ></image>
+        <view wx:for="{{recentSearches}}" wx:key="time" class="search-tag" data-keyword="{{item.keyword}}" bindtap="{{isManageMode ? '' : 'onSearch'}}">
+          <text class="search-tag-text">{{item.keyword}}</text>
+          <image wx:if="{{isManageMode}}" src="/images/close.svg" bindtap="removeSearchKeyword" data-index="{{index}}" class="tag-delete"></image>
         </view>
       </view>
-      
-      <view class="manage-actions" wx:if="{{isManageMode}}">
-        <view class="action-btn danger" bindtap="clearRecentSearches">清空</view>
-        <view class="action-btn" bindtap="finishManage">完成</view>
-      </view>
-      <view class="clear-all" bindtap="toggleManageMode" wx:if="{{!isManageMode}}">管理</view>
     </view>
 
     <!-- 搜索结果列表 -->
@@ -57,7 +41,7 @@
         <view class="result-group">
           <view class="result-title">{{item.title}}</view>
           <view class="match-count">共找到 {{item.matchCount}} 处匹配</view>
-          
+
           <block wx:for="{{item.snippets}}" wx:key="position" wx:for-index="snippetIndex">
             <view class="result-item" bindtap="onItemTap" data-id="{{item.id}}" data-index="{{index}}" data-snippet-index="{{snippetIndex}}">
               <rich-text nodes="{{item.text}}" class="result-preview"></rich-text>
@@ -81,9 +65,9 @@
     </scroll-view>
 
     <!-- 空状态 -->
-    <view wx:if="{{!loading && results.length === 0}}" class="empty">
+    <view wx:if="{{!loading && results.length === 0 && keyword.length}}" class="empty">
       <image src="/images/search-empty.svg" mode="aspectFit"></image>
-      <text>暂无搜索结果</text>
+      <text>没有相关的搜索结果</text>
     </view>
   </view>
 </view>

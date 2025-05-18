@@ -1,6 +1,13 @@
 // pages/search/search.js
-
- // parseHtmlForLines
+function escapeHtml(html) {
+  return html.replace(/&nbsp;/g, ' ') // 替换 &nbsp; 为空格
+    .replace(/&amp;/g, '&') // 替换 &amp; 为 &
+    .replace(/&lt;/g, '<') // 替换 &lt; 为 <
+    .replace(/&gt;/g, '>') // 替换 &gt; 为 >
+    .replace(/&quot;/g, '"') // 替换 &quot; 为 "
+    .replace(/&#39;/g, "'"); // 替换 &#39; 为 '
+}
+// parseHtmlForLines
 // This method is provided by system and strictly tested.
 // AI assistant should not allowed to change this method!
 /**
@@ -27,7 +34,7 @@ function parseHtmlForLines(html) {
   let textPos = 0; // 纯文本内容的位置
   const tagStack = [];
   let i = 0;
-  
+
   while (i < html.length) {
     // 检查是否是标签开始
     if (html[i] === '<') {
@@ -38,13 +45,13 @@ function parseHtmlForLines(html) {
         i++;
         continue;
       }
-      
+
       const tagContent = html.substring(i + 1, tagEnd).trim();
       const isClosingTag = tagContent.startsWith('/');
-      const tagName = isClosingTag 
-        ? tagContent.substring(1).split(/\s/)[0].toLowerCase() 
-        : tagContent.split(/\s/)[0].toLowerCase();
-      
+      const tagName = isClosingTag ?
+        tagContent.substring(1).split(/\s/)[0].toLowerCase() :
+        tagContent.split(/\s/)[0].toLowerCase();
+
       if (isClosingTag) {
         // 处理闭合标签
         if (tagStack.length > 0 && tagStack[tagStack.length - 1] === tagName) {
@@ -57,22 +64,21 @@ function parseHtmlForLines(html) {
           i = tagEnd + 1;
           continue;
         }
-        
+
         // 检查是否是自闭合标签
-        const isSelfClosing = tagContent.endsWith('/') || 
-          ['br', 'img', 'hr', 'meta', 'link'].includes(tagName);
-        
+        const isSelfClosing = tagContent.endsWith('/') || ['br', 'img', 'hr', 'meta', 'link'].includes(tagName);
+
         if (!isSelfClosing) {
           tagStack.push(tagName);
         }
-        
+
         // 处理特殊标签
         if (tagName === 'br') {
           // 遇到<br>，结束当前行并添加空行
           if (currentLine) {
             lines.push({
               line: lines.length + 1,
-              text: currentLine.trim(),
+              text: escapeHtml(currentLine.trim()),
               startPos: textPos - currentLength,
               endPos: textPos - 1
             });
@@ -91,7 +97,7 @@ function parseHtmlForLines(html) {
           if (currentLine) {
             lines.push({
               line: lines.length + 1,
-              text: currentLine.trim(),
+              text: escapeHtml(currentLine.trim()),
               startPos: textPos - currentLength,
               endPos: textPos - 1
             });
@@ -107,10 +113,10 @@ function parseHtmlForLines(html) {
           });
           textPos += 1; // 段落间距
         }
-        
+
         i = tagEnd + 1;
       }
-    } 
+    }
     // 处理文本内容
     else {
       // 检查是否是换行符
@@ -119,7 +125,7 @@ function parseHtmlForLines(html) {
         if (currentLine) {
           lines.push({
             line: lines.length + 1,
-            text: currentLine.trim(),
+            text: escapeHtml(currentLine.trim()),
             startPos: textPos - currentLength,
             endPos: textPos - 1
           });
@@ -141,17 +147,17 @@ function parseHtmlForLines(html) {
       i++;
     }
   }
-  
+
   // 添加最后一行
   if (currentLine) {
     lines.push({
       line: lines.length + 1,
-      text: currentLine.trim(),
+      text: escapeHtml(currentLine.trim()),
       startPos: textPos - currentLength,
       endPos: textPos - 1
     });
   }
-  
+
   // 处理最后一行（如果是空行）
   if (lines.length > 0 && lines[lines.length - 1].text === '') {
     // 如果最后一行是空行，保留它
@@ -159,7 +165,7 @@ function parseHtmlForLines(html) {
     // 确保最后一行有正确的endPos
     lines[lines.length - 1].endPos = textPos - 1;
   }
-  
+
   return lines;
 }
 Page({
@@ -171,7 +177,6 @@ Page({
     pageSize: 10,
     currentPage: 0,
     recentSearches: [],
-    showRecent: true,
     isManageMode: false // 新增管理模式状态
   },
 
@@ -182,7 +187,9 @@ Page({
 
   loadRecentSearches() {
     const searches = wx.getStorageSync('recentSearches') || [];
-    this.setData({ recentSearches: searches });
+    this.setData({
+      recentSearches: searches
+    });
   },
 
   saveSearchKeyword(keyword) {
@@ -197,7 +204,9 @@ Page({
     // 限制数量
     searches = searches.slice(0, 10);
     wx.setStorageSync('recentSearches', searches);
-    this.setData({ recentSearches: searches });
+    this.setData({
+      recentSearches: searches
+    });
   },
 
   loadNotes() {
@@ -207,26 +216,27 @@ Page({
 
   onInput(e) {
     const keyword = e.detail.value.trim();
-    this.setData({ keyword });
-    
+    this.setData({
+      keyword
+    });
+    if (keyword == '') {
+      this.setData({
+        results: [],
+      });
+      return;
+    }
+    this.setData({
+      loading: true,
+      results: [],
+      currentPage: 0,
+      hasMore: true,
+    });
     // 自动搜索防抖处理
     if (this.searchTimer) clearTimeout(this.searchTimer);
     this.searchTimer = setTimeout(() => {
-      if (keyword) {
-        this.setData({
-          loading: true,
-          results: [],
-          currentPage: 0,
-          hasMore: true,
-          showRecent: false
-        });
+      if (keyword && this.data.keyword == keyword) {
         this.searchNotes();
-        this.saveSearchKeyword(keyword);
-      } else {
-        this.setData({ 
-          results: [],
-          showRecent: true 
-        });
+
       }
     }, 300);
   },
@@ -234,113 +244,128 @@ Page({
   onSearch(e) {
     // 获取关键词：优先从点击事件获取，其次从搜索框获取
     const keyword = e?.currentTarget?.dataset?.keyword || this.data.keyword;
-    
+
     if (!keyword) {
-      wx.showToast({ title: '请输入搜索关键词', icon: 'none' });
+      wx.showToast({
+        title: '请输入搜索关键词',
+        icon: 'none'
+      });
       return;
     }
-    
+
     // 更新搜索框显示
-    this.setData({ keyword });
-    
+    this.setData({
+      keyword
+    });
+
     this.setData({
       loading: true,
       results: [],
       currentPage: 0,
       hasMore: true,
-      showRecent: false
     });
     this.searchNotes();
   },
-searchNotes() {
-  const { keyword, pageSize, currentPage } = this.data;
-  const start = currentPage * pageSize;
-  const end = start + pageSize;
-  let matchedNotes = [];
-  const lowerKeyword = keyword.toLowerCase();
+  searchNotes() {
+    const {
+      keyword,
+      pageSize,
+      currentPage
+    } = this.data;
+    const start = currentPage * pageSize;
+    const end = start + pageSize;
+    let matchedNotes = [];
+    const lowerKeyword = keyword.toLowerCase();
 
-  // 使用新的HTML解析搜索逻辑
-  this.notes.forEach(note => {
-    const parsedLines = parseHtmlForLines(note.content);
-    let matchCount = 0;
-    let firstMatchPos = -1;
-    const snippets = [];
+    // 使用新的HTML解析搜索逻辑
+    this.notes.forEach(note => {
+      const parsedLines = parseHtmlForLines(note.content);
+      let matchCount = 0;
+      let firstMatchPos = -1;
+      const snippets = [];
 
-    // 在解析后的每行中搜索关键字
-    parsedLines.forEach(line => {
-      const lowerLine = line.text.toLowerCase();
-      let pos = lowerLine.indexOf(lowerKeyword);
-      
-      while (pos !== -1) {
-        matchCount++;
-        const absPos = line.startPos + pos;
-        if (firstMatchPos === -1) firstMatchPos = absPos;
+      // 在解析后的每行中搜索关键字
+      parsedLines.forEach(line => {
+        const lowerLine = line.text.toLowerCase();
+        let pos = lowerLine.indexOf(lowerKeyword);
 
-        // 修正：基于纯文本内容生成高亮片段
-        // 计算片段在原始内容中的位置范围
-        const snippetStart = Math.max(0, absPos - 20); // 向前取20个字符
-        const snippetEnd = Math.min(note.content.length, absPos + keyword.length + 50); // 向后取50个字符
+        while (pos !== -1) {
+          matchCount++;
+          const absPos = line.startPos + pos;
+          if (firstMatchPos === -1) firstMatchPos = absPos;
 
-        // 从原始内容中提取片段（这里需要调整）
-        // 由于我们无法直接从纯文本中获取原始HTML片段，我们需要重新思考
-        // 这里我们简化处理，直接使用解析后的行文本作为基础
-        let snippetText = line.text.substring(
-          Math.max(0, pos - 20), 
-          Math.min(line.text.length, pos + keyword.length + 50)
-        );
-        
-        // 调整高亮位置
-        const relativeKeywordPos = pos - Math.max(0, pos - 20);
-        
-        // 高亮关键字
-        snippetText = snippetText.replace(
-          new RegExp(keyword, 'gi'),
-          match => `<span class="highlight">${match}</span>`
-        );
+          // 修正：基于纯文本内容生成高亮片段
+          // 计算片段在原始内容中的位置范围
+          const snippetStart = Math.max(0, absPos - 20); // 向前取20个字符
+          const snippetEnd = Math.min(note.content.length, absPos + keyword.length + 50); // 向后取50个字符
 
-        snippets.push({
-          id: note.id,
-          text: snippetText,
-          lineNumber: line.line,
-          startPos: snippetStart, // 这里可能需要更精确的计算
-          endPos: snippetStart + snippetText.length - 1
+          // 从原始内容中提取片段（这里需要调整）
+          // 由于我们无法直接从纯文本中获取原始HTML片段，我们需要重新思考
+          // 这里我们简化处理，直接使用解析后的行文本作为基础
+          let snippetText = line.text.substring(
+            Math.max(0, pos - 20),
+            Math.min(line.text.length, pos + keyword.length + 50)
+          );
+
+          // 调整高亮位置
+          const relativeKeywordPos = pos - Math.max(0, pos - 20);
+
+          // 高亮关键字
+          snippetText = snippetText.replace(
+            new RegExp(keyword, 'gi'),
+            match => `<span class="highlight">${match}</span>`
+          );
+
+          snippets.push({
+            id: note.id,
+            text: snippetText,
+            lineNumber: line.line,
+            startPos: snippetStart, // 这里可能需要更精确的计算
+            endPos: snippetStart + snippetText.length - 1
+          });
+
+          pos = lowerLine.indexOf(lowerKeyword, pos + 1);
+        }
+      });
+
+      if (matchCount > 0) {
+        matchedNotes.push({
+          title: note.title,
+          snippets: snippets,
+          matchCount: matchCount,
+          firstMatchPos: firstMatchPos
         });
-
-        pos = lowerLine.indexOf(lowerKeyword, pos + 1);
       }
     });
 
-    if (matchCount > 0) {
-      matchedNotes.push({
-        title: note.title,
-        snippets: snippets,
-        matchCount: matchCount,
-        firstMatchPos: firstMatchPos
-      });
+    // 排序: 匹配次数多的在前
+    matchedNotes.sort((a, b) => b.matchCount - a.matchCount);
+    if (matchedNotes.length) {
+      this.saveSearchKeyword(keyword);
     }
-  });
-
-  // 排序: 匹配次数多的在前
-  matchedNotes.sort((a, b) => b.matchCount - a.matchCount);
-
-  this.setData({
-    results: matchedNotes.slice(0, end),
-    loading: false,
-    hasMore: end < matchedNotes.length
-  });
-},
+    this.setData({
+      results: matchedNotes.slice(0, end),
+      loading: false,
+      hasMore: end < matchedNotes.length
+    });
+  },
 
   onReachBottom() {
     if (!this.data.hasMore || this.data.loading) return;
-    this.setData({ currentPage: this.data.currentPage + 1 }, () => {
+    this.setData({
+      currentPage: this.data.currentPage + 1
+    }, () => {
       this.searchNotes();
     });
   },
 
   onItemTap(e) {
-    const { id, index } = e.currentTarget.dataset;
+    const {
+      id,
+      index
+    } = e.currentTarget.dataset;
     const note = this.data.results[index];
-    
+
     wx.navigateTo({
       url: `/pages/detail/detail?id=${id}&line=${note.snippets[0].lineNumber}&highlight=${this.data.keyword}`,
     });
@@ -353,11 +378,15 @@ searchNotes() {
 
   // 删除单个搜索记录
   removeSearchKeyword(e) {
-    const { index } = e.currentTarget.dataset;
+    const {
+      index
+    } = e.currentTarget.dataset;
     let searches = [...this.data.recentSearches];
     searches.splice(index, 1);
     wx.setStorageSync('recentSearches', searches);
-    this.setData({ recentSearches: searches });
+    this.setData({
+      recentSearches: searches
+    });
     wx.showToast({
       title: '已删除',
       icon: 'none',
@@ -383,18 +412,20 @@ searchNotes() {
   clearInput() {
     this.setData({
       keyword: '',
-      clearBtnVisible: false
+      clearBtnVisible: false,
+      results: [],
+      hasMore: false
     });
   },
 
   clearRecentSearches() {
     wx.showModal({
       title: '提示',
-      content: '确定要清空所有搜索记录吗？',
+      content: '将清空所有搜索记录',
       success: (res) => {
         if (res.confirm) {
           wx.setStorageSync('recentSearches', []);
-          this.setData({ 
+          this.setData({
             recentSearches: [],
             isManageMode: false
           });
@@ -410,11 +441,15 @@ searchNotes() {
 
   // 删除单个搜索记录
   removeSearchKeyword(e) {
-    const { index } = e.currentTarget.dataset;
+    const {
+      index
+    } = e.currentTarget.dataset;
     let searches = [...this.data.recentSearches];
     searches.splice(index, 1);
     wx.setStorageSync('recentSearches', searches);
-    this.setData({ recentSearches: searches });
+    this.setData({
+      recentSearches: searches
+    });
     wx.showToast({
       title: '已删除',
       icon: 'none',
