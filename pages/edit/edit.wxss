@@ -56,94 +56,91 @@
   margin-bottom: 20rpx;
 }
 
+.toolbar-view {
+  position: sticky;
+  top: 0;
+  background-color:white;
+  z-index: 100;
+  padding: 10rpx 0;
+}
+
 /* 工具栏样式 */
 .toolbar {
   width: 100%;
-  background-color: white;
-  /* border-radius: 10rpx 10rpx 0 0; */
-  padding: 10rpx 20rpx 25rpx 20rpx;
-  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 10% 10%;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  z-index: 100;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding-bottom: 18rpx;
+  border-bottom: 2px solid steelblue;
 }
 
 .toolbar-item {
-  width: 90rpx;
+  width: 80rpx;
   height: 80rpx;
   display: flex;
   justify-content: center;
   align-items: center;
   /* padding: 0 5rpx; */
-  margin: 8rpx;
   border-radius: 15%;
   background-color: #f0f0f0;
-   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
 }
 
-.icon-text {
+.toolbar-item .icon-text {
   font-size: 32rpx;
   font-weight: bold;
   color: #333;
 }
 
-.icon-bold {
+.toolbar-item .icon-bold {
   font-weight: 900;
 }
 
-.icon-italic {
+.toolbar-item .icon-italic {
   font-style: italic;
 }
 
-.icon-image {
-  width: 32rpx;
-  height: 32rpx;
-}
-
 /* SVG图标颜色控制 */
-.toolbar-item image {
-  color: #333;
+.toolbar-item .icon-image {
+  color: #666;
+  width: 36rpx;
+  height: 36rpx;
 }
 
-.toolbar-item.active image {
-  color: #3498db;
-}
-
-.toolbar-item.active .icon-text,
-.toolbar-item.active .icon-image {
+.toolbar-item.active .icon-text {
   color: white;
 }
 
+.toolbar-item.active .icon-image {
+  background-color: rgb(255, 255, 255);
+}
+
 .toolbar-item.active {
-  background-color:#999;
+  background-color: #999;
 }
 
 /* 颜色选择器面板 */
 .color-picker-panel {
-  width: 100%;
-  background-color: white;
-  border-radius: 10rpx;
-  border-top: 0.5px solid #ffbefc;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 80%;
+  background-color: #fffffff0;
+  border-radius: 0 0 15% 15%;
+  border-bottom: 3px solid #6d2ed1;
+  box-shadow: 0 12rpx 10rpx rgba(0, 0, 0, 0.2);
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
-  position: fixed;
-  padding-bottom: 125rpx;
-  bottom: 0rpx;
-  left: 0;
-  z-index: 90;
+  justify-content: space-around;
+  padding: 12rpx 0;
+  z-index: 1000;
 }
 
 .color-item {
   width: 60rpx;
   height: 60rpx;
   border-radius: 20%;
-  margin: 25rpx 0;
   border: 1rpx solid #bfbfbf;
 }
 

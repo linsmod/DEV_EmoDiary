@@ -11,10 +11,54 @@
     <view class="note-time">
       最后更新 {{updateTimeStr}} · 字数: {{wordCount || 0}}
     </view>
-    <view class="note-time">
+    <!-- <view class="note-time">
       {{formatsJSON}} · focus: {{focusedTarget}}
-    </view>
+    </view> -->
 
+    <!-- 富文本工具栏 -->
+    <view class="toolbar-view">
+      <view class="toolbar">
+        <!-- 字体大小 -->
+        <view class="toolbar-item {{activeFontSize ? 'active' : ''}}" bindtap="toggleFontSize">
+          <view class="icon-text">A<sub>a</sub></view>
+        </view>
+
+        <!-- 加粗 -->
+        <view class="toolbar-item {{formats.bold ? 'active' : ''}}" bindtap="toggleBold" data-name="bold">
+          <text class="icon-text icon-bold">B</text>
+        </view>
+
+        <!-- 斜体 -->
+        <view class="toolbar-item {{formats.italic ? 'active' : ''}}" bindtap="toggleItalic" data-name="italic">
+          <text class="icon-text icon-italic">I</text>
+        </view>
+
+        <!-- 对齐方式 -->
+        <view class="toolbar-item {{activeAlign ? 'active' : ''}}" bindtap="toggleAlign">
+          <image class="icon-image" wx:if="{{activeAlign === 'left'}}" src="/images/icons/align-left.svg" mode="aspectFit"></image>
+          <image class="icon-image" wx:elif="{{activeAlign === 'center'}}" src="/images/icons/align-center.svg" mode="aspectFit"></image>
+          <image class="icon-image" wx:elif="{{activeAlign === 'right'}}" src="/images/icons/align-right.svg" mode="aspectFit"></image>
+          <image class="icon-image" wx:elif="{{activeAlign === 'justify' || activeAlign===''}}" src="/images/icons/align-justify.svg" mode="aspectFit"></image>
+        </view>
+
+        <!-- 列表 -->
+        <view class="toolbar-item {{activeList ? 'active' : ''}}" bindtap="toggleList">
+          <image class="icon-image" wx:if="{{activeList === 'ordered'}}" src="/images/icons/list-ordered.svg" mode="aspectFit"></image>
+          <image class="icon-image" wx:elif="{{activeList === 'bullet'}}" src="/images/icons/list-bullet.svg" mode="aspectFit"></image>
+          <image class="icon-image" wx:else src="/images/icons/list-bullet.svg" mode="aspectFit"></image>
+        </view>
+
+        <!-- 背景色 -->
+        <view class="toolbar-item color-picker" style="background-color: {{activeColor?activeColor:'none'}};" bindtap="showColorPicker">
+          <image class="icon-image" src="/images/icons/color.svg" mode="aspectFit"></image>
+        </view>
+      </view>
+      <!-- 颜色选择器 -->
+      <view class="color-picker-panel" wx:if="{{showColorPicker}}">
+        <view class="color-item" wx:for="{{colors}}" wx:key="*this" style="background-color: {{item}}" bindtap="setBackgroundColor" data-color="{{item}}">
+        </view>
+      </view>
+    </view>
     <!-- 内容输入 -->
     <view class="note-content content-group">
       <editor id="editor" bindblur="onEditorBlur" class="content-editor" placeholder="请输入内容" read-only="{{readonly}}" show-img-size show-img-toolbar show-img-resize adjust-position="{{false}}" bindfocus="onEditorFocus" bindready="onEditorReady" bindinput="onContentInput" bindstatuschange="onStatusChange">
@@ -22,58 +66,14 @@
     </view>
 
     <!-- 浮动操作按钮 -->
-    <view class="float-buttons" style="right:{{buttonRight}}px; bottom:{{buttonBottom}}px;" bindtouchstart="onButtonTouchStart" bindtouchmove="onButtonTouchMove" bindtouchend="onButtonTouchEnd">
-      <view class="drag-handle"></view>
+    <view class="float-buttons" style="right:{{floatRight}}px; top:{{floatTop}}px;" bindtouchstart="onButtonTouchStart" catchtouchmove="onButtonTouchMove"  bindtouchend="onButtonTouchEnd" >
+      <view class="drag-handle" ></view>
       <view class="float-button" bindtap="undo">
         <image src="/images/icons/undo.svg" mode="aspectFit"></image>
       </view>
       <view class="float-button" bindtap="redo">
         <image src="/images/icons/redo.svg" mode="aspectFit"></image>
       </view>
-    </view>
-  </view>
-
-  <!-- 颜色选择器 -->
-  <view class="color-picker-panel" wx:if="{{showColorPicker}}">
-    <view class="color-item" wx:for="{{colors}}" wx:key="*this" style="background-color: {{item}}" bindtap="setBackgroundColor" data-color="{{item}}">
-    </view>
-  </view>
-
-  <!-- 富文本工具栏 -->
-  <view class="toolbar">
-    <!-- 字体大小 -->
-    <view class="toolbar-item" bindtap="toggleFontSize">
-      <text class="icon-text">A+</text>
-    </view>
-
-    <!-- 加粗 -->
-    <view class="toolbar-item {{formats.bold ? 'active' : ''}}" bindtap="toggleBold" data-name="bold">
-      <text class="icon-text icon-bold">B</text>
-    </view>
-
-    <!-- 斜体 -->
-    <view class="toolbar-item {{formats.italic ? 'active' : ''}}" bindtap="toggleItalic" data-name="italic">
-      <text class="icon-text icon-italic">I</text>
-    </view>
-
-    <!-- 对齐方式 -->
-    <view class="toolbar-item" bindtap="toggleAlign">
-      <image class="icon-image" wx:if="{{activeAlign === 'left'}}" src="/images/icons/align-left.svg" mode="aspectFit"></image>
-      <image class="icon-image" wx:elif="{{activeAlign === 'center'}}" src="/images/icons/align-center.svg" mode="aspectFit"></image>
-      <image class="icon-image" wx:elif="{{activeAlign === 'right'}}" src="/images/icons/align-right.svg" mode="aspectFit"></image>
-      <image class="icon-image" wx:elif="{{activeAlign === 'justify'}}" src="/images/icons/align-justify.svg" mode="aspectFit"></image>
-    </view>
-
-    <!-- 列表 -->
-    <view class="toolbar-item {{activeList ? 'active' : ''}}" bindtap="toggleList">
-      <image class="icon-image" wx:if="{{activeList === 'ordered'}}" src="/images/icons/list-ordered.svg" mode="aspectFit"></image>
-      <image class="icon-image" wx:elif="{{activeList === 'bullet'}}" src="/images/icons/list-bullet.svg" mode="aspectFit"></image>
-      <image class="icon-image" wx:else src="/images/icons/list-bullet.svg" mode="aspectFit" style="opacity: 0.4;"></image>
-    </view>
-
-    <!-- 背景色 -->
-    <view class="toolbar-item color-picker" bindtap="showColorPicker">
-      <image class="icon-image" src="/images/icons/color.svg" mode="aspectFit"></image>
     </view>
   </view>
 </view>

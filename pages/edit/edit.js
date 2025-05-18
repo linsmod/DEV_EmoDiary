@@ -3,28 +3,36 @@ const TARGET_EDITOR = 'editor';
 const TARGET_TITLE = 'title';
 const TARGET_EDITOR_LF = 'editor:lost_focus';
 const TARGET_TITLE_LF = 'title:lost_focus';
+const fontSizeTable = [
+  '16px',
+  '18px',
+  '20px',
+  '22px',
+  '24px',
+  '',
+];
 Page({
   data: {
     id: '',
     title: '',
     content: '',
+    initialContent:'',
     isEdit: false,
     autoSaveTimer: null,
     editorCtx: null,
     formats: {},
-    fontSize: 'normal',
     showColorPicker: false,
     colors: ['#ffffff', '#f8bbd0', '#e1f5fe', '#f1f8e9', '#fff8e1', '#efebe9'],
     wordCount: 0, // 内容字数统计
     canUndo: false, // 是否可以撤销
     canRedo: false, // 是否可以重做
-    activeAlign: 'left', // 当前激活的对齐方式
+    activeAlign: '', // 当前激活的对齐方式
     activeList: '', // 当前激活的列表类型
-    activeFontSize: 'normal', // 当前激活的字体大小
+    activeFontSize: '', // 当前激活的字体大小
     formatsJSON: '',
     // 浮动按钮相关
-    buttonRight: 30, // 按钮初始位置
-    buttonBottom: 200,
+    floatRight: 30, // 按钮初始位置
+    floatTop: 100,
     startX: 0, // 触摸起始位置
     startY: 0,
     buttonMoving: false, // 是否正在拖动
@@ -37,11 +45,6 @@ Page({
     scrollTop: 0, // 页面滚动位置
     keyboardHeight: 0, // 键盘高度
     editorMarginTop: 0 // 编辑器底部padding
-  },
-  onEditorBlur: function () {
-    this.setData({
-      focusedTarget: TARGET_EDITOR_LF
-    });
   },
   // 数据迁移：确保所有笔记都有有效ID
   migrateNotes: function () {
@@ -71,21 +74,21 @@ Page({
 
   onLoad: function (options) {
     // 监听键盘高度变化
-    wx.onKeyboardHeightChange(res => {
-      if (this.data.focusedTarget.startsWith(TARGET_TITLE)) {
-        this.setData({
-          editorMarginTop: 0
-        });
-        return;
-      }
-      const keyboardHeight = res.height;
-      const toolbarHeight = 80;
-      setTimeout(() => {
-        this.setData({
-          editorMarginTop: keyboardHeight > 0 ? toolbarHeight : 0
-        });
-      }, 150); // ensure margin adjusing is after layout completed.
-    });
+    // wx.onKeyboardHeightChange(res => {
+    //   if (this.data.focusedTarget.startsWith(TARGET_TITLE)) {
+    //     this.setData({
+    //       editorMarginTop: 0
+    //     });
+    //     return;
+    //   }
+    //   const keyboardHeight = res.height;
+    //   const toolbarHeight = 80;
+    //   setTimeout(() => {
+    //     this.setData({
+    //       editorMarginTop: keyboardHeight > 0 ? toolbarHeight : 0
+    //     });
+    //   }, 150); // ensure margin adjusing is after layout completed.
+    // });
 
     // 先执行数据迁移
     const notes = this.migrateNotes();
@@ -99,12 +102,12 @@ Page({
           id: note.id,
           title: note.title,
           content: note.content,
-          initialContent: note.content,
+          initialContent: note.content || '',
           updateTime: note.updateTime,
           updateTimeStr: note.updateTimeStr,
           isEdit: true
         });
-
+        console.log('set initial content done.')
         wx.setNavigationBarTitle({
           title: '编辑笔记'
         });
@@ -129,19 +132,28 @@ Page({
     const formats = e.detail;
     this.setData({
       formats,
-      formatsJSON: JSON.stringify(formats),
-      activeAlign: formats.align || 'left',
+      formatsJSON: 'CHANG>' + JSON.stringify(e),
+      activeColor: formats.backgroundColor || '',
+      activeAlign: formats.align || '',
       activeList: formats.list || '',
-      activeFontSize: formats.size === '14px' ? 'small' : formats.size === '18px' ? 'large' : 'normal',
+      activeFontSize: formats.fontSize || '',
       activeBold: formats.bold || '',
       activeItalic: formats.italic || '',
       activeUnderline: formats.underline || '',
     });
     this.data.changes++;
   },
-
-  // 编辑器初始化完成时触发
+  preventScroll(e) {
+    // 如果不在拖动按钮，则阻止滚动
+    debugger
+    if (!this.data.isDragging) {
+      // e.stopPropagation(); // 阻止事件冒泡
+      return false; // 阻止默认行为（可选）
+    }
+    // 如果正在拖动按钮，则允许滚动（不阻止）
+  },
   onEditorReady: function () {
+    console.log('ready?')
     const that = this;
     wx.createSelectorQuery().select('#editor').context(function (res) {
       that.setData({
@@ -152,6 +164,7 @@ Page({
       if (that.data.isEdit) {
         // 判断内容是否为HTML格式
         if (that.data.content.indexOf('<') !== -1 && that.data.content.indexOf('>') !== -1) {
+          console.log('set initial content to editor.')
           that.data.editorCtx.setContents({
             html: that.data.content
           });
@@ -166,10 +179,6 @@ Page({
           wordCount: that.getTextLength(that.data.content)
         });
       }
-      that.setData({
-        history: [],
-        historyIndex: -1
-      })
     }).exec();
   },
 
@@ -214,8 +223,17 @@ Page({
 
   onEditorFocus: function (e) {
     this.setData({
+      formatsJSON: 'FOCUS>' + JSON.stringify(e),
       focusedTarget: TARGET_EDITOR,
+      focusingScrollTop: e.target.scrollTop || 0,
       readonly: false
+    });
+  },
+  onEditorBlur: function (e) {
+    this.setData({
+      formatsJSON: 'BLUR>' + JSON.stringify(e),
+      focusedTarget: TARGET_EDITOR_LF,
+      focusingScrollTop: e.target.scrollTop || 0,
     });
   },
   // 内容输入事件
@@ -232,42 +250,14 @@ Page({
 
   // 切换字体大小
   toggleFontSize: function () {
-    const sizes = ['small', 'normal', 'large', 'xlarge', 'xxlarge', 'xxxlarge'];
-    const currentIndex = sizes.indexOf(this.data.activeFontSize);
-    const nextIndex = (currentIndex + 1) % sizes.length;
-    const nextSize = sizes[nextIndex];
-
+    const currentIndex = fontSizeTable.indexOf(this.data.activeFontSize);
+    const nextSize = currentIndex == -1 ? fontSizeTable[0] : fontSizeTable[(currentIndex + 1) % (fontSizeTable.length)];
     this.setData({
       activeFontSize: nextSize,
-      fontSize: nextSize
     });
-
-    let fontSize;
-    switch (nextSize) {
-      case 'small':
-        fontSize = '14px';
-        break;
-      case 'large':
-        fontSize = '18px';
-        break;
-      case 'xlarge':
-        fontSize = '20px';
-        break;
-      case 'xxlarge':
-        fontSize = '22px';
-        break;
-      case 'xxxlarge':
-        fontSize = '24px';
-        break;
-      case 'normal':
-      default:
-        fontSize = '16px';
-    }
-
     this.runAction(() => {
-      this.data.editorCtx.format('fontSize', fontSize);
+      this.data.editorCtx.format('fontSize', nextSize);
     })
-
   },
 
   // 显示颜色选择器
@@ -292,7 +282,7 @@ Page({
 
   // 切换对齐方式
   toggleAlign: function () {
-    const alignTypes = ['left', 'center', 'right', 'justify'];
+    const alignTypes = ['left', 'center', 'right', ''];
     const currentIndex = alignTypes.indexOf(this.data.activeAlign);
     const nextIndex = (currentIndex + 1) % alignTypes.length;
     const nextAlign = alignTypes[nextIndex];
@@ -328,7 +318,7 @@ Page({
       readonly: false
     })
     func();
-    wx.hideKeyboard();
+    // wx.hideKeyboard();
     this.setData({
       readonly: rd
     });
@@ -510,9 +500,9 @@ Page({
   },
 
   onButtonTouchMove: function (e) {
-    if (!this.data.buttonMoving) return;
+    if (!this.data.buttonMoving) return true;
 
-    const systemInfo = wx.getSystemInfoSync();
+    const systemInfo = wx.getWindowInfo();
     const windowWidth = systemInfo.windowWidth; // 屏幕可用宽度（px）
     const windowHeight = systemInfo.windowHeight; // 屏幕可用高度（px）
 
@@ -548,8 +538,8 @@ Page({
     // 设置新的定时器，延迟更新位置（例如：50ms）
     const timer = setTimeout(() => {
       this.setData({
-        buttonRight: this.data.buttonRight - deltaX,
-        buttonBottom: this.data.buttonBottom - deltaY,
+        floatRight: this.data.floatRight - deltaX,
+        floatTop: this.data.floatTop + deltaY,
         startX: adjustedX,
         startY: adjustedY,
         debounceTimer: null // 清空定时器引用
@@ -560,6 +550,7 @@ Page({
     this.setData({
       debounceTimer: timer,
     });
+    return false;
   },
 
   // 浮动按钮触摸结束
@@ -577,8 +568,8 @@ Page({
 
   // 记录页面滚动位置
   onPageScroll: function (e) {
-    if (this.data.keyboardHeight > 0)
-      return;
+    // if (this.data.keyboardHeight > 0)
+    //   return;
     this.setData({
       scrollTop: parseInt(e.scrollTop)
     });
