@@ -387,11 +387,6 @@ Page({
     this.setData({
       recentSearches: searches
     });
-    wx.showToast({
-      title: '已删除',
-      icon: 'none',
-      duration: 1000
-    });
   },
 
   // 切换管理模式
@@ -438,22 +433,4 @@ Page({
       }
     });
   },
-
-  // 删除单个搜索记录
-  removeSearchKeyword(e) {
-    const {
-      index
-    } = e.currentTarget.dataset;
-    let searches = [...this.data.recentSearches];
-    searches.splice(index, 1);
-    wx.setStorageSync('recentSearches', searches);
-    this.setData({
-      recentSearches: searches
-    });
-    wx.showToast({
-      title: '已删除',
-      icon: 'none',
-      duration: 1000
-    });
-  }
 })
