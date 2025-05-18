@@ -85,9 +85,6 @@
 .manage-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 20rpx;
-  padding-top: 20rpx;
-  border-top: 1rpx solid #f5f5f5;
 }
 
 .action-btn {
