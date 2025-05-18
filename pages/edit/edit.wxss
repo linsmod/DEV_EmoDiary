@@ -61,18 +61,19 @@
   top: 0;
   background-color:white;
   z-index: 100;
+  padding-top: 12rpx;
 }
 
 /* 工具栏样式 */
 .toolbar {
   width: 100%;
-  border-radius: 0 0 10% 10%;
+  border-radius: 0 0 12% 12%;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
   padding-bottom: 18rpx;
-  border-bottom: 2px solid steelblue;
-  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgb(65, 130, 190);
+  box-shadow: 0 3rpx 2rpx rgba(83, 83, 83, 0.2);
 }
 
 .toolbar-item {
